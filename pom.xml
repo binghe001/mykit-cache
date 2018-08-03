@@ -14,6 +14,16 @@
         <module>mykit-cache-ehcache</module>
         <module>mykit-cache-test</module>
     </modules>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <skip_maven_deploy>false</skip_maven_deploy>
+        <jdk.version>1.7</jdk.version>
+        <spring.version>4.3.8.RELEASE</spring.version>
+        <aspectj.version>1.8.5</aspectj.version>
+        <spring.data.redis.version>1.8.3.RELEASE</spring.data.redis.version>
+    </properties>
+
     <dependencies>
         <!-- log -->
         <dependency>
@@ -41,6 +51,12 @@
         </dependency>
 
         <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>2.9.6</version>
+        </dependency>
+
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.12</version>
@@ -48,15 +64,6 @@
         </dependency>
 
     </dependencies>
-
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <skip_maven_deploy>false</skip_maven_deploy>
-        <jdk.version>1.7</jdk.version>
-        <spring.version>4.1.6.RELEASE</spring.version>
-        <aspectj.version>1.8.5</aspectj.version>
-        <spring.data.redis.version>2.0.9.RELEASE</spring.data.redis.version>
-    </properties>
 
     <build>
         <plugins>
@@ -94,6 +101,31 @@
                     <aggregate>true</aggregate>
                     <charset>UTF-8</charset>
                     <docencoding>UTF-8</docencoding>
+                    <aggregate>true</aggregate>
+
+                    <tags>
+                        <tag>
+                            <name>author</name>
+                            <placement>a</placement>
+                            <head>作者</head>
+                        </tag>
+                        <tag>
+                            <name>version</name>
+                            <placement>a</placement>
+                            <head>版本号</head>
+                        </tag>
+                        <tag>
+                            <name>date</name>
+                            <placement>a</placement>
+                            <head>日期</head>
+                        </tag>
+                        <tag>
+                            <name>description</name>
+                            <placement>a</placement>
+                            <head>功能描述</head>
+                        </tag>
+                    </tags>
+
                 </configuration>
                 <executions>
                     <execution>
