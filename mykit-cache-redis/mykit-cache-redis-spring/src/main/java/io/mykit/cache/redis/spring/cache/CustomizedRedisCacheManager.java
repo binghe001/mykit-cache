@@ -1,5 +1,6 @@
 package io.mykit.cache.redis.spring.cache;
 
+import io.mykit.cache.redis.spring.constants.CacheConstants;
 import io.mykit.cache.redis.spring.utils.ReflectionUtils;
 import io.mykit.cache.redis.spring.utils.SpringContextUtils;
 import org.slf4j.Logger;
@@ -26,20 +27,16 @@ import java.util.concurrent.ConcurrentHashMap;
 public class CustomizedRedisCacheManager extends RedisCacheManager {
     private static final Logger logger = LoggerFactory.getLogger(CustomizedRedisCacheManager.class);
 
-    /**
-     * 父类dynamic字段
-     */
-    private static final String SUPER_FIELD_DYNAMIC = "dynamic";
-
-    /**
-     * 父类cacheNullValues字段
-     */
-    private static final String SUPER_FIELD_CACHENULLVALUES = "cacheNullValues";
 
     RedisCacheManager redisCacheManager = null;
 
+    private CacheSupport getCacheSupport() {
+        return SpringContextUtils.getBean(CacheSupport.class);
+    }
+
     // 0 - never expire
     private long defaultExpiration = 0;
+
     private Map<String, CacheTime> cacheTimes = null;
 
     public CustomizedRedisCacheManager(RedisOperations redisOperations) {
@@ -94,23 +91,30 @@ public class CustomizedRedisCacheManager extends RedisCacheManager {
      * 创建缓存
      *
      * @param cacheName 缓存名称
-     * @return
+     * @return CustomizedRedisCache对象
      */
     @Override
     public CustomizedRedisCache getMissingCache(String cacheName) {
-
+        CacheSupport cacheSupport = this.getCacheSupport();
+        String cacheKey = cacheSupport.getCacheKey(cacheName);
+        Map<String, CacheTime> map = cacheSupport.getCacheTimes(cacheName);
+        if (cacheTimes != null){
+            cacheTimes.putAll(map);
+        }else{
+            setCacheTimes(map);
+        }
         // 有效时间，初始化获取默认的有效时间
-        Long expirationSecondTime = getExpirationSecondTime(cacheName);
+        Long expirationSecondTime = getExpirationSecondTime(cacheKey);
         // 自动刷新时间，默认是0
-        Long preloadSecondTime = getPreloadSecondTime(cacheName);
+        Long preloadSecondTime = getPreloadSecondTime(cacheKey);
 
-        logger.info("缓存 cacheName：{}，过期时间:{}, 自动刷新时间:{}", cacheName, expirationSecondTime, preloadSecondTime);
+        logger.info("缓存 cacheName：{}，过期时间:{}, 自动刷新时间:{}", cacheKey, expirationSecondTime, preloadSecondTime);
         // 是否在运行时创建Cache
-        Boolean dynamic = (Boolean) ReflectionUtils.getFieldValue(getInstance(), SUPER_FIELD_DYNAMIC);
+        Boolean dynamic = (Boolean) ReflectionUtils.getFieldValue(getInstance(), CacheConstants.SUPER_FIELD_DYNAMIC);
         // 是否允许存放NULL
-        Boolean cacheNullValues = (Boolean) ReflectionUtils.getFieldValue(getInstance(), SUPER_FIELD_CACHENULLVALUES);
-        return dynamic ? new CustomizedRedisCache(cacheName, (this.isUsePrefix() ? this.getCachePrefix().prefix(cacheName) : null),
-                this.getRedisOperations(), expirationSecondTime, preloadSecondTime, cacheNullValues) : null;
+        Boolean cacheNullValues = (Boolean) ReflectionUtils.getFieldValue(getInstance(), CacheConstants.SUPER_FIELD_CACHENULLVALUES);
+        return dynamic ? new CustomizedRedisCache(cacheKey, (this.isUsePrefix() ? this.getCachePrefix().prefix(cacheKey) : null),
+                this.getRedisOperations(), expirationSecondTime, preloadSecondTime, cacheNullValues, cacheSupport) : null;
     }
 
     /**
@@ -118,7 +122,7 @@ public class CustomizedRedisCacheManager extends RedisCacheManager {
      *
      * @param cacheTimes
      */
-    public void setCacheTimess(Map<String, CacheTime> cacheTimes) {
+    public void setCacheTimes(Map<String, CacheTime> cacheTimes) {
         this.cacheTimes = (cacheTimes != null ? new ConcurrentHashMap<String, CacheTime>(cacheTimes) : null);
     }
 

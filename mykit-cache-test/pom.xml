@@ -12,5 +12,11 @@
     <artifactId>mykit-cache-test</artifactId>
     <version>1.0.0</version>
 
-
+    <dependencies>
+        <dependency>
+            <groupId>io.mykit.cache</groupId>
+            <artifactId>mykit-cache-redis-spring</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+    </dependencies>
 </project>

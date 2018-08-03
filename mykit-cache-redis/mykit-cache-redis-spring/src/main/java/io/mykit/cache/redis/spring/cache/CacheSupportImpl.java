@@ -1,6 +1,7 @@
 package io.mykit.cache.redis.spring.cache;
 
 import io.mykit.cache.redis.spring.cache.expression.CacheOperationExpressionEvaluator;
+import io.mykit.cache.redis.spring.constants.CacheConstants;
 import io.mykit.cache.redis.spring.utils.RedisTemplateUtils;
 import io.mykit.cache.redis.spring.utils.ReflectionUtils;
 import io.mykit.cache.redis.spring.utils.SpringContextUtils;
@@ -18,9 +19,12 @@ import org.springframework.expression.EvaluationContext;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.MethodInvoker;
+import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -34,10 +38,6 @@ public class CacheSupportImpl implements CacheSupport {
     private static final Logger logger = LoggerFactory.getLogger(CacheSupportImpl.class);
 
     private final CacheOperationExpressionEvaluator evaluator = new CacheOperationExpressionEvaluator();
-
-    private final String SEPARATOR = "#";
-
-    private final String INVOCATION_CACHE_KEY_SUFFIX = ":invocation_cache_key_suffix";
 
     @Autowired
     private KeyGenerator keyGenerator;
@@ -85,6 +85,65 @@ public class CacheSupportImpl implements CacheSupport {
             logger.error("刷新redis缓存，反序列化方法信息异常");
         }
 
+    }
+
+    @Override
+    public Map<String, CacheTime> getCacheTimes(String cacheName) {
+        ConcurrentMap<String, CacheTime> map = new ConcurrentHashMap<>();
+        //默认超时时间5分钟
+        long expireTime = CacheConstants.DEFAULT_EXPIRATION_SECOND_TIME;
+        //默认刷新缓存时间为280
+        long preloadTime = CacheConstants.DEFAULT_PRELOAD_SECOND_TIME;
+        //默认的缓存Key
+        String cacheKey = CacheConstants.DEFAULT_EXPIRATION_KEY;
+        //传递的参数不为空
+        if(!StringUtils.isEmpty(cacheName)){
+            if (cacheName.contains(CacheConstants.SEPARATOR)){
+                String[] cacheArray = cacheName.split(CacheConstants.SEPARATOR);
+                //设置@Cachable中的value中的key
+                if (cacheArray.length > 0){
+                    cacheKey = cacheArray[0].trim();
+                }
+                //设置@Cachable中的value中的expireTime
+                if(cacheArray.length > 1){
+                    try{
+                        expireTime = Long.parseLong(cacheArray[1].trim());
+                    }catch (NumberFormatException e){
+                        expireTime = CacheConstants.DEFAULT_EXPIRATION_SECOND_TIME;
+                    }
+                }
+                //设置@Cachable中的value中的preloadTime
+                if(cacheArray.length > 2){
+                    try{
+                        preloadTime = Long.parseLong(cacheArray[2].trim());
+                    }catch (NumberFormatException e){
+                        preloadTime = CacheConstants.DEFAULT_PRELOAD_SECOND_TIME;
+                    }
+                }
+            }else{
+                cacheKey = cacheName.trim();
+            }
+        }
+        map.put(cacheKey, new CacheTime(expireTime, preloadTime));
+        return map;
+    }
+
+    @Override
+    public String getCacheKey(String cacheName) {
+        String cacheKey = CacheConstants.DEFAULT_EXPIRATION_KEY;
+        //传递的参数不为空
+        if (!StringUtils.isEmpty(cacheName)){
+            if (cacheName.contains(CacheConstants.SEPARATOR)){
+                String[] cacheArray = cacheName.split(CacheConstants.SEPARATOR);
+                //设置@Cachable中的value中的key
+                if (cacheArray.length > 0){
+                    cacheKey = cacheArray[0].trim();
+                }
+            }else{
+                cacheKey = cacheName.trim();
+            }
+        }
+        return cacheKey;
     }
 
     private void refreshCache(CachedMethodInvocation invocation, String cacheName) {
@@ -190,7 +249,7 @@ public class CacheSupportImpl implements CacheSupport {
     }
 
     private String getInvocationCacheKey(String cacheKey) {
-        return cacheKey + INVOCATION_CACHE_KEY_SUFFIX;
+        return cacheKey + CacheConstants.INVOCATION_CACHE_KEY_SUFFIX;
     }
 
     /**
@@ -202,7 +261,7 @@ public class CacheSupportImpl implements CacheSupport {
     private Collection<String> generateValue(Set<String> annotatedCacheNames) {
         Collection<String> cacheNames = new HashSet<>();
         for (final String cacheName : annotatedCacheNames) {
-            String[] cacheParams = cacheName.split(SEPARATOR);
+            String[] cacheParams = cacheName.split(CacheConstants.SEPARATOR);
             // 截取名称获取真实的value值
             String realCacheName = cacheParams[0];
             cacheNames.add(realCacheName);

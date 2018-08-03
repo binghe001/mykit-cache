@@ -1,6 +1,7 @@
 package io.mykit.cache.redis.spring.cache;
 
 import java.lang.reflect.Method;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -25,8 +26,26 @@ public interface CacheSupport {
     /**
      * 按容器以及指定键更新缓存
      *
-     * @param cacheName
-     * @param cacheKey
+     * @param cacheName 缓存的名称
+     * @param cacheKey 缓存的key
      */
     void refreshCacheByKey(String cacheName, String cacheKey);
+
+
+    /**
+     * 解析@Cacheable注解的value中的时间信息，以#分隔，第一个为缓存的key,第二个为缓存的有效时间，第三个为缓存的主动刷新时间
+     * @param cacheName @Cacheable注解的value，格式为cachekey#expirationSecondTime#preloadSecondTime
+     * @return 以CacheKey为Key,时间对象为value的Map
+     */
+    Map<String, CacheTime> getCacheTimes(String cacheName);
+
+
+    /**
+     * 解析@Cacheable注解的value中的实际CacheKey信息
+     * @param cacheName @Cacheable注解的value信息
+     * @return CacheKey信息
+     */
+    String getCacheKey(String cacheName);
+
+
 }

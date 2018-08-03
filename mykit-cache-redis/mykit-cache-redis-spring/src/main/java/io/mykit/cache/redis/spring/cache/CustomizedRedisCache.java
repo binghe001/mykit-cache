@@ -1,7 +1,6 @@
 package io.mykit.cache.redis.spring.cache;
 
 import io.mykit.cache.redis.spring.lock.RedisLock;
-import io.mykit.cache.redis.spring.utils.SpringContextUtils;
 import io.mykit.cache.redis.spring.utils.ThreadTaskUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,9 +24,11 @@ import org.springframework.util.Assert;
 public class CustomizedRedisCache extends RedisCache {
     private static final Logger logger = LoggerFactory.getLogger(CustomizedRedisCache.class);
 
-    private CacheSupport getCacheSupport() {
-        return SpringContextUtils.getBean(CacheSupport.class);
-    }
+//    private CacheSupport getCacheSupport() {
+//        return SpringContextUtils.getBean(CacheSupport.class);
+//    }
+
+    private CacheSupport cacheSupport;
 
     private final RedisOperations redisOperations;
 
@@ -44,7 +45,7 @@ public class CustomizedRedisCache extends RedisCache {
      */
     private long expirationSecondTime;
 
-    public CustomizedRedisCache(String name, byte[] prefix, RedisOperations<? extends Object, ? extends Object> redisOperations, long expiration, long preloadSecondTime) {
+    public CustomizedRedisCache(String name, byte[] prefix, RedisOperations<? extends Object, ? extends Object> redisOperations, long expiration, long preloadSecondTime, CacheSupport cacheSupport) {
         super(name, prefix, redisOperations, expiration);
         this.redisOperations = redisOperations;
         // 指定有效时间
@@ -52,9 +53,10 @@ public class CustomizedRedisCache extends RedisCache {
         // 指定自动刷新时间
         this.preloadSecondTime = preloadSecondTime;
         this.prefix = prefix;
+        this.cacheSupport = cacheSupport;
     }
 
-    public CustomizedRedisCache(String name, byte[] prefix, RedisOperations<? extends Object, ? extends Object> redisOperations, long expiration, long preloadSecondTime, boolean allowNullValues) {
+    public CustomizedRedisCache(String name, byte[] prefix, RedisOperations<? extends Object, ? extends Object> redisOperations, long expiration, long preloadSecondTime, boolean allowNullValues, CacheSupport cacheSupport) {
         super(name, prefix, redisOperations, expiration, allowNullValues);
         this.redisOperations = redisOperations;
         // 指定有效时间
@@ -62,6 +64,7 @@ public class CustomizedRedisCache extends RedisCache {
         // 指定自动刷新时间
         this.preloadSecondTime = preloadSecondTime;
         this.prefix = prefix;
+        this.cacheSupport = cacheSupport;
 
     }
 
@@ -138,7 +141,7 @@ public class CustomizedRedisCache extends RedisCache {
                             Long ttl = CustomizedRedisCache.this.redisOperations.getExpire(cacheKeyStr);
                             if (null != ttl && ttl <= CustomizedRedisCache.this.preloadSecondTime) {
                                 // 通过获取代理方法信息重新加载缓存数据
-                                CustomizedRedisCache.this.getCacheSupport().refreshCacheByKey(CustomizedRedisCache.super.getName(), cacheKeyStr);
+                                CustomizedRedisCache.this.cacheSupport.refreshCacheByKey(CustomizedRedisCache.super.getName(), cacheKeyStr);
                             }
                         }
                     } catch (Exception e) {
