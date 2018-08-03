@@ -1,5 +1,6 @@
 package io.mykit.cache.redis.spring.cache;
 
+import com.alibaba.fastjson.JSONObject;
 import io.mykit.cache.redis.spring.constants.CacheConstants;
 import io.mykit.cache.redis.spring.utils.ReflectionUtils;
 import io.mykit.cache.redis.spring.utils.SpringContextUtils;
@@ -108,6 +109,7 @@ public class CustomizedRedisCacheManager extends RedisCacheManager {
         // 自动刷新时间，默认是0
         Long preloadSecondTime = getPreloadSecondTime(cacheKey);
 
+        logger.info("目前cacheTimes中存储的数据为：{}", JSONObject.toJSONString(cacheTimes));
         logger.info("缓存 cacheName：{}，过期时间:{}, 自动刷新时间:{}", cacheKey, expirationSecondTime, preloadSecondTime);
         // 是否在运行时创建Cache
         Boolean dynamic = (Boolean) ReflectionUtils.getFieldValue(getInstance(), CacheConstants.SUPER_FIELD_DYNAMIC);

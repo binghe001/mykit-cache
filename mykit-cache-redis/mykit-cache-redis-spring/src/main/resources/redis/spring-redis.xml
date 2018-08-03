@@ -16,7 +16,7 @@
 
 
     <!-- 引入配置文件 -->
-    <context:property-placeholder location="classpath*:properties/redis.properties" system-properties-mode="FALLBACK"/>
+    <context:property-placeholder location="classpath*:properties/redis-default.properties" system-properties-mode="FALLBACK"/>
 
     <bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
         <property name="maxTotal" value="${redis.cluster.max.total}" />
@@ -68,7 +68,6 @@
         </property>
     </bean >
 
-   <!-- <bean id="keyGenerator" class="org.springframework.cache.interceptor.SimpleKeyGenerator"/>-->
 
     <!--配置CacheTime类-->
     <bean id="cacheTime" class="io.mykit.cache.redis.spring.cache.CacheTime">
