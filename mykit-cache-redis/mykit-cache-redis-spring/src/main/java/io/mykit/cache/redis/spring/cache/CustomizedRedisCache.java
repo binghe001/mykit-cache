@@ -24,10 +24,6 @@ import org.springframework.util.Assert;
 public class CustomizedRedisCache extends RedisCache {
     private static final Logger logger = LoggerFactory.getLogger(CustomizedRedisCache.class);
 
-//    private CacheSupport getCacheSupport() {
-//        return SpringContextUtils.getBean(CacheSupport.class);
-//    }
-
     private CacheSupport cacheSupport;
 
     private final RedisOperations redisOperations;
@@ -73,8 +69,8 @@ public class CustomizedRedisCache extends RedisCache {
      * 为了不影响get的性能，启用后台线程去完成缓存的刷。
      * 并且只放一个线程去刷新数据。
      *
-     * @param key
-     * @return
+     * @param key  缓存的Key
+     * @return ValueWrapper对象
      */
     @Override
     public ValueWrapper get(final Object key) {
@@ -97,8 +93,8 @@ public class CustomizedRedisCache extends RedisCache {
      * 这时候再去缓存中获取值的时候返回的就是null了。
      * 可以先获取缓存的值，再去判断key是否存在。
      *
-     * @param cacheKey
-     * @return
+     * @param cacheKey 缓存的key
+     * @return RedisCacheElement对象
      */
     @Override
     public RedisCacheElement get(final RedisCacheKey cacheKey) {
@@ -161,9 +157,8 @@ public class CustomizedRedisCache extends RedisCache {
 
     /**
      * 获取RedisCacheKey
-     *
-     * @param key
-     * @return
+     * @param key 缓存的Key
+     * @return RedisCacheKey对象
      */
     public RedisCacheKey getRedisCacheKey(Object key) {
 
@@ -173,9 +168,8 @@ public class CustomizedRedisCache extends RedisCache {
 
     /**
      * 获取RedisCacheKey
-     *
-     * @param key
-     * @return
+     * @param key 缓存的Key
+     * @return 缓存的value
      */
     public String getCacheKey(Object key) {
         return new String(getRedisCacheKey(key).getKeyBytes());

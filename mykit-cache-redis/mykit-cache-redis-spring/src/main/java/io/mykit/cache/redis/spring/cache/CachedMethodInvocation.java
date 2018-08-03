@@ -80,9 +80,8 @@ public class CachedMethodInvocation implements Serializable {
 
     /**
      * 必须重写equals和hashCode方法，否则放到set集合里没法去重
-     *
-     * @param o
-     * @return
+     * @param o 重写equals方法传递的参数
+     * @return 返回对象是是否相等，相等返回true；不相等返回false
      */
     @Override
     public boolean equals(Object o) {

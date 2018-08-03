@@ -57,8 +57,8 @@ public class CustomizedRedisCacheManager extends RedisCacheManager {
 
     /**
      * 获取过期时间
-     *
-     * @return
+     * @param name 缓存名称
+     * @return 过期时间
      */
     public long getExpirationSecondTime(String name) {
         if (StringUtils.isEmpty(name)) {
@@ -75,8 +75,8 @@ public class CustomizedRedisCacheManager extends RedisCacheManager {
 
     /**
      * 获取自动刷新时间
-     *
-     * @return
+     * @param name 缓存名称
+     * @return 自动刷新时间
      */
     private long getPreloadSecondTime(String name) {
         // 自动刷新时间，默认是0
@@ -90,7 +90,6 @@ public class CustomizedRedisCacheManager extends RedisCacheManager {
 
     /**
      * 创建缓存
-     *
      * @param cacheName 缓存名称
      * @return CustomizedRedisCache对象
      */
@@ -122,7 +121,7 @@ public class CustomizedRedisCacheManager extends RedisCacheManager {
     /**
      * 根据缓存名称设置缓存的有效时间和刷新时间，单位秒
      *
-     * @param cacheTimes
+     * @param cacheTimes 缓存的名称和时间集合
      */
     public void setCacheTimes(Map<String, CacheTime> cacheTimes) {
         this.cacheTimes = (cacheTimes != null ? new ConcurrentHashMap<String, CacheTime>(cacheTimes) : null);
@@ -130,8 +129,7 @@ public class CustomizedRedisCacheManager extends RedisCacheManager {
 
     /**
      * 设置默认的过去时间， 单位：秒
-     *
-     * @param defaultExpireTime
+     * @param defaultExpireTime 默认过期时间
      */
     @Override
     public void setDefaultExpiration(long defaultExpireTime) {

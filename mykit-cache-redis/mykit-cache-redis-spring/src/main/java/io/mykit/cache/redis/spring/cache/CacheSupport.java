@@ -33,16 +33,16 @@ public interface CacheSupport {
 
 
     /**
-     * 解析@Cacheable注解的value中的时间信息，以#分隔，第一个为缓存的key,第二个为缓存的有效时间，第三个为缓存的主动刷新时间
-     * @param cacheName @Cacheable注解的value，格式为cachekey#expirationSecondTime#preloadSecondTime
+     * 解析cacheable注解的value中的时间信息，以#分隔，第一个为缓存的key,第二个为缓存的有效时间，第三个为缓存的主动刷新时间
+     * @param cacheName cacheable注解的value，格式为cachekey#expirationSecondTime#preloadSecondTime
      * @return 以CacheKey为Key,时间对象为value的Map
      */
     Map<String, CacheTime> getCacheTimes(String cacheName);
 
 
     /**
-     * 解析@Cacheable注解的value中的实际CacheKey信息
-     * @param cacheName @Cacheable注解的value信息
+     * 解析cacheable注解的value中的实际CacheKey信息
+     * @param cacheName cacheable注解的value信息
      * @return CacheKey信息
      */
     String getCacheKey(String cacheName);

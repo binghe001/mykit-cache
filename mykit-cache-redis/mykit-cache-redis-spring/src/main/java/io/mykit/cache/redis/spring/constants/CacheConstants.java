@@ -9,7 +9,7 @@ package io.mykit.cache.redis.spring.constants;
 public class CacheConstants {
 
     /**
-     * @Cacheable 注解的value中的分隔符
+     * Cacheable注解的value中的分隔符
      */
     public static final String SEPARATOR = "#";
 

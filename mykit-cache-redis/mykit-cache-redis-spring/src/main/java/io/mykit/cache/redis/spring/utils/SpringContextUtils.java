@@ -24,6 +24,7 @@ public class SpringContextUtils implements ApplicationContextAware {
 
     /**
      * 取得存储在静态变量中的ApplicationContext.
+     * @return ApplicationContext对象
      */
     public static ApplicationContext getApplicationContext() {
         checkApplicationContext();
@@ -32,6 +33,8 @@ public class SpringContextUtils implements ApplicationContextAware {
 
     /**
      * 从静态变量ApplicationContext中取得Bean, 自动转型为所赋值对象的类型.
+     * @param name Spring中Bean的名称
+     * @return 泛型对象
      */
     @SuppressWarnings("unchecked")
     public static <T> T getBean(String name) {
@@ -41,6 +44,8 @@ public class SpringContextUtils implements ApplicationContextAware {
 
     /**
      * 从静态变量ApplicationContext中取得Bean, 自动转型为所赋值对象的类型.
+     * @param clazz 指定的clazz对象
+     * @return 泛型对象
      */
     public static <T> T getBean(Class<T> clazz) {
         checkApplicationContext();

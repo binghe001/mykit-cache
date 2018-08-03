@@ -191,8 +191,14 @@ public class CacheSupportImpl implements CacheSupport {
     /**
      * 解析SpEL表达式，获取注解上的key属性值
      * 直接扣的Spring解析表达式部分代码
+     * @param caches 缓存集合
+     * @param key 缓存的key
+     * @param method 设置缓存的方法
+     * @param args 缓存方法的参数
+     * @param target 缓存方法所在的目标对象
+     * @param result 结果
      *
-     * @return
+     * @return 注解上的key属性值
      */
     protected Object generateKey(Collection<? extends Cache> caches, String key, Method method, Object[] args,
                                  Object target, Object result) {
@@ -212,8 +218,8 @@ public class CacheSupportImpl implements CacheSupport {
     /**
      * 获取类信息
      *
-     * @param target
-     * @return
+     * @param target 目标对象
+     * @return 目标对象的Class
      */
     private Class<?> getTargetClass(Object target) {
         Class<?> targetClass = AopProxyUtils.ultimateTargetClass(target);
@@ -226,8 +232,8 @@ public class CacheSupportImpl implements CacheSupport {
     /**
      * 通过cache名称获取cache列表
      *
-     * @param annotatedCacheNames
-     * @return
+     * @param annotatedCacheNames 缓存注解的名称Set集合
+     * @return cache列表
      */
     public Collection<? extends Cache> getCache(Set<String> annotatedCacheNames) {
 
@@ -255,8 +261,8 @@ public class CacheSupportImpl implements CacheSupport {
     /**
      * 获取注解上的value属性值（cacheNames）
      *
-     * @param annotatedCacheNames
-     * @return
+     * @param annotatedCacheNames 缓存注解的名称Set集合
+     * @return 注解上的value属性值（cacheNames）
      */
     private Collection<String> generateValue(Set<String> annotatedCacheNames) {
         Collection<String> cacheNames = new HashSet<>();
