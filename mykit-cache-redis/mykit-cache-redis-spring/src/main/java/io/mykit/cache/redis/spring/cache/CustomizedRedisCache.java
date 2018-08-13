@@ -1,5 +1,6 @@
 package io.mykit.cache.redis.spring.cache;
 
+import io.mykit.cache.redis.spring.constants.CacheConstants;
 import io.mykit.cache.redis.spring.lock.RedisLock;
 import io.mykit.cache.redis.spring.utils.ThreadTaskUtils;
 import org.slf4j.Logger;
@@ -13,6 +14,7 @@ import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * @author liuyazhuang
@@ -76,6 +78,9 @@ public class CustomizedRedisCache extends RedisCache {
     public ValueWrapper get(final Object key) {
         RedisCacheKey cacheKey = getRedisCacheKey(key);
         String cacheKeyStr = getCacheKey(key);
+
+        //TODO 暂时解决刷新缓存获取不到缓存数据的问题
+        //cacheKeyStr = splitCacheKey(cacheKeyStr);
         // 调用重写后的get方法
         ValueWrapper valueWrapper = this.get(cacheKey);
 
@@ -84,6 +89,31 @@ public class CustomizedRedisCache extends RedisCache {
             refreshCache(key, cacheKeyStr);
         }
         return valueWrapper;
+    }
+
+    /**
+     * 如果缓存的Key存在: 则将缓存的key切分只获取第二个元素，如果不存在:则直接返回
+     * @param cacheKey 缓存的key
+     * @return 切分后的缓存key
+     */
+    private String splitCacheKey(String cacheKey){
+        String result = "";
+        if (StringUtils.isEmpty(cacheKey))
+            return result;
+        if (cacheKey.contains(CacheConstants.SEPARATOE_SPLIT)){
+            //拼接除了第一个以外的信息
+            String[] keyArray = cacheKey.split(CacheConstants.SEPARATOE_SPLIT);
+            //默认忽略第一个元素，因为这个方法获取的key为原有方法除了以:切分后第一个元素以外的所有元素
+            if(keyArray.length > 1){
+                for(int i = 1; i < keyArray.length - 1; i++){
+                    result = result.concat(keyArray[i]).concat(CacheConstants.SEPARATOE_SPLIT);
+                }
+                result = result.concat(keyArray[keyArray.length - 1]);
+            }
+        }else{
+            result = cacheKey;
+        }
+        return result;
     }
 
     /**

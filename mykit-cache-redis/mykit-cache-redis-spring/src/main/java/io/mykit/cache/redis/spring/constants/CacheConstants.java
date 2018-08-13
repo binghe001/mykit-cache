@@ -13,6 +13,14 @@ public class CacheConstants {
      */
     public static final String SEPARATOR = "#";
 
+    /**
+     * 拆分缓存Key的分隔符
+     */
+    public static final String SEPARATOE_SPLIT = ":";
+
+    /**
+     * 缓存后缀
+     */
     public static final String INVOCATION_CACHE_KEY_SUFFIX = ":invocation_cache_key_suffix";
 
     /**

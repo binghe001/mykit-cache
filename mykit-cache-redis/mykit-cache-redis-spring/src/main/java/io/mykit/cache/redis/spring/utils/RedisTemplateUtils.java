@@ -1,9 +1,10 @@
 package io.mykit.cache.redis.spring.utils;
 
 import io.mykit.cache.redis.spring.serializer.StringRedisSerializer;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer;
+import redis.clients.jedis.JedisCluster;
 
 /**
  * @author liuyazhuang
@@ -13,9 +14,11 @@ import org.springframework.data.redis.serializer.JdkSerializationRedisSerializer
  */
 
 public class RedisTemplateUtils {
-    private static RedisTemplate redisTemplate;
+    private volatile static RedisTemplate redisTemplate;
 
-    public static RedisTemplate getRedisTemplate(RedisConnectionFactory redisConnectionFactory) {
+    private volatile static JedisCluster jedisCluster;
+
+    public static RedisTemplate getRedisTemplate(JedisConnectionFactory redisConnectionFactory) {
         if (redisTemplate == null) {
             synchronized (RedisTemplateUtils.class) {
                 if (redisTemplate == null) {
@@ -35,5 +38,17 @@ public class RedisTemplateUtils {
 
         }
         return redisTemplate;
+    }
+
+    public static JedisCluster getJedisCluster(JedisConnectionFactory redisConnectionFactory){
+        if (jedisCluster == null){
+            synchronized (RedisTemplateUtils.class){
+                if (jedisCluster == null){
+                    
+                }
+            }
+        }
+
+        return jedisCluster;
     }
 }

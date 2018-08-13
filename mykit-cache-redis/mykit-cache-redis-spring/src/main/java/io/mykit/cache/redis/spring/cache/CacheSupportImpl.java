@@ -2,7 +2,6 @@ package io.mykit.cache.redis.spring.cache;
 
 import io.mykit.cache.redis.spring.cache.expression.CacheOperationExpressionEvaluator;
 import io.mykit.cache.redis.spring.constants.CacheConstants;
-import io.mykit.cache.redis.spring.utils.RedisTemplateUtils;
 import io.mykit.cache.redis.spring.utils.ReflectionUtils;
 import io.mykit.cache.redis.spring.utils.SpringContextUtils;
 import org.slf4j.Logger;
@@ -13,7 +12,7 @@ import org.springframework.cache.Cache;
 import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.context.expression.AnnotatedElementKey;
 import org.springframework.data.redis.cache.RedisCacheManager;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.expression.EvaluationContext;
 import org.springframework.stereotype.Component;
@@ -46,7 +45,11 @@ public class CacheSupportImpl implements CacheSupport {
     private RedisCacheManager cacheManager;
 
     @Autowired
-    private RedisConnectionFactory redisConnectionFactory;
+    private JedisConnectionFactory redisConnectionFactory;
+
+    @Autowired
+    private RedisTemplate redisTemplate;
+
 
     @Override
     public void registerInvocation(Object targetBean, Method targetMethod, Class[] invocationParamTypes,
@@ -64,18 +67,20 @@ public class CacheSupportImpl implements CacheSupport {
             if (cache instanceof CustomizedRedisCache) {
                 CustomizedRedisCache redisCache = ((CustomizedRedisCache) cache);
                 // 将方法信息放到redis缓存
-                RedisTemplate redisTemplate = RedisTemplateUtils.getRedisTemplate(redisConnectionFactory);
-                redisTemplate.opsForValue().set(getInvocationCacheKey(redisCache.getCacheKey(key)),
-                        invocation, redisCache.getExpirationSecondTime(), TimeUnit.SECONDS);
+                //RedisTemplate redisTemplate = RedisTemplateUtils.getRedisTemplate(redisConnectionFactory);
+                String invocationCacheKey = getInvocationCacheKey(redisCache.getCacheKey(key));
+                redisTemplate.opsForValue().set(invocationCacheKey, invocation, redisCache.getExpirationSecondTime(), TimeUnit.SECONDS);
             }
         }
     }
 
     @Override
     public void refreshCacheByKey(String cacheName, String cacheKey) {
-        RedisTemplate redisTemplate = RedisTemplateUtils.getRedisTemplate(redisConnectionFactory);
+        //RedisTemplate redisTemplate = RedisTemplateUtils.getRedisTemplate(redisConnectionFactory);
         //在redis拿到方法信息，然后刷新缓存
-        Object result = redisTemplate.opsForValue().get(getInvocationCacheKey(cacheKey));
+        String invocationCacheKey = getInvocationCacheKey(cacheKey);
+        logger.info("refreshCacheByKey==>>" + invocationCacheKey);
+        Object result = redisTemplate.opsForValue().get(invocationCacheKey);
 
         if (result != null && result instanceof CachedMethodInvocation) {
             CachedMethodInvocation invocation = (CachedMethodInvocation) result;
@@ -156,7 +161,7 @@ public class CacheSupportImpl implements CacheSupport {
             // 通过Cache对象更新缓存
             cache.put(invocation.getKey(), computed);
 
-            RedisTemplate redisTemplate = RedisTemplateUtils.getRedisTemplate(redisConnectionFactory);
+            //RedisTemplate redisTemplate = RedisTemplateUtils.getRedisTemplate(redisConnectionFactory);
             CustomizedRedisCache redisCache = (CustomizedRedisCache) cache;
             long expireTime = redisCache.getExpirationSecondTime();
             // 刷新redis中缓存法信息key的有效时间
@@ -212,7 +217,8 @@ public class CacheSupportImpl implements CacheSupport {
             AnnotatedElementKey methodCacheKey = new AnnotatedElementKey(method, targetClass);
             return evaluator.key(key, methodCacheKey, evaluationContext);
         }
-        return this.keyGenerator.generate(target, method, args);
+        Object generate = this.keyGenerator.generate(target, method, args);
+        return generate;
     }
 
     /**
@@ -256,6 +262,9 @@ public class CacheSupportImpl implements CacheSupport {
 
     private String getInvocationCacheKey(String cacheKey) {
         return cacheKey + CacheConstants.INVOCATION_CACHE_KEY_SUFFIX;
+
+        //TODO 暂时解决刷新缓存时，获取缓存中的数据为空的问题
+        //return cacheKey;
     }
 
     /**

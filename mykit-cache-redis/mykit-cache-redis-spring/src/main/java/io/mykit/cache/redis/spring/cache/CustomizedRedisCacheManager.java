@@ -29,7 +29,7 @@ public class CustomizedRedisCacheManager extends RedisCacheManager {
     private static final Logger logger = LoggerFactory.getLogger(CustomizedRedisCacheManager.class);
 
 
-    RedisCacheManager redisCacheManager = null;
+    private RedisCacheManager redisCacheManager = null;
 
     private CacheSupport getCacheSupport() {
         return SpringContextUtils.getBean(CacheSupport.class);
