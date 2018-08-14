@@ -15,6 +15,9 @@ import java.util.concurrent.ConcurrentMap;
 public class SpringContextWrapper {
 
 
+    /**
+     * 存储各个调用方的ApplicationContext的map, key为计算出的调用方的hashCode值， value为调用方对应的ApplicationContext
+     */
     private volatile static ConcurrentMap<String, ApplicationContext> instance;
 
     static {
@@ -22,7 +25,9 @@ public class SpringContextWrapper {
     }
 
     /**
-     * 实现ApplicationContextAware接口的context注入函数, 将其存入静态变量.
+     * 将各模块对应的ApplicationContext存到map中
+     * @param contextKey  计算出的模块的唯一hash值
+     * @param applicationContext 模块对应的ApplicationContext
      */
     public static void setApplicationContext(String contextKey, ApplicationContext applicationContext) {
         //缓存中不存在相关的applicationContext，存将applicationContext放入到缓存
@@ -32,7 +37,8 @@ public class SpringContextWrapper {
     }
 
     /**
-     * 取得存储在静态变量中的ApplicationContext.
+     * 取得存储在map缓存中的ApplicationContext.
+     * @param contextKey 计算出的模块的唯一hash值
      * @return ApplicationContext对象
      */
     public static ApplicationContext getApplicationContext(String contextKey) {
@@ -41,7 +47,8 @@ public class SpringContextWrapper {
     }
 
     /**
-     * 从静态变量ApplicationContext中取得Bean, 自动转型为所赋值对象的类型.
+     * 从缓存map中的ApplicationContext中取得Bean, 自动转型为所赋值对象的类型.
+     * @param contextKey 计算出的模块的唯一hash值
      * @param name Spring中Bean的名称
      * @return 泛型对象
      */
@@ -52,7 +59,8 @@ public class SpringContextWrapper {
     }
 
     /**
-     * 从静态变量ApplicationContext中取得Bean, 自动转型为所赋值对象的类型.
+     * 从缓存map中的ApplicationContext中取得Bean, 自动转型为所赋值对象的类型.
+     * @param contextKey 计算出的模块的唯一hash值
      * @param clazz 指定的clazz对象
      * @return 泛型对象
      */
@@ -62,12 +70,15 @@ public class SpringContextWrapper {
     }
 
     /**
-     * 清除applicationContext静态变量.
+     * 清除缓存Map中的所有ApplicationContext实例
      */
     public static void cleanApplicationContext() {
         instance.clear();
     }
 
+    /**
+     * 检测缓存map中是否存在ApplicationContext实例
+     */
     private static void checkApplicationContext() {
         if (instance == null || instance.size() == 0) {
             throw new IllegalStateException("applicaitonContext未注入,请在applicationContext.xml中定义SpringContextHolder");
