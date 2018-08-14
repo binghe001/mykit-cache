@@ -5,8 +5,6 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -28,7 +26,6 @@ import java.util.*;
 @Aspect
 @Component
 public class CachingAnnotationsAspect {
-    private static final Logger logger = LoggerFactory.getLogger(CachingAnnotationsAspect.class);
 
     @Autowired
     private CacheSupport cacheSupport;

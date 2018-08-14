@@ -4,8 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import io.mykit.cache.redis.spring.constants.CacheConstants;
 import io.mykit.cache.redis.spring.utils.ReflectionUtils;
 import io.mykit.cache.redis.spring.utils.SpringContextUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.util.CollectionUtils;
@@ -24,10 +23,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * 支持方法上配置过期时间
  * 支持热加载缓存：缓存即将过期时主动刷新缓存
  */
-
+@Slf4j
 public class CustomizedRedisCacheManager extends RedisCacheManager {
-    private static final Logger logger = LoggerFactory.getLogger(CustomizedRedisCacheManager.class);
-
 
     private RedisCacheManager redisCacheManager = null;
 
@@ -108,8 +105,8 @@ public class CustomizedRedisCacheManager extends RedisCacheManager {
         // 自动刷新时间，默认是0
         Long preloadSecondTime = getPreloadSecondTime(cacheKey);
 
-        logger.info("目前cacheTimes中存储的数据为：{}", JSONObject.toJSONString(cacheTimes));
-        logger.info("缓存 cacheName：{}，过期时间:{}, 自动刷新时间:{}", cacheKey, expirationSecondTime, preloadSecondTime);
+        log.debug("目前cacheTimes中存储的数据为：{}", JSONObject.toJSONString(cacheTimes));
+        log.debug("缓存 cacheName：{}，过期时间:{}, 自动刷新时间:{}", cacheKey, expirationSecondTime, preloadSecondTime);
         // 是否在运行时创建Cache
         Boolean dynamic = (Boolean) ReflectionUtils.getFieldValue(getInstance(), CacheConstants.SUPER_FIELD_DYNAMIC);
         // 是否允许存放NULL

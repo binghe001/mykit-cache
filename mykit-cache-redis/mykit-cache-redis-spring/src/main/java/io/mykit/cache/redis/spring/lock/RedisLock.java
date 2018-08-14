@@ -1,7 +1,6 @@
 package io.mykit.cache.redis.spring.lock;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.core.RedisCallback;
@@ -42,9 +41,8 @@ import java.util.UUID;
  * 如果服务器返回 OK ，那么这个客户端获得锁。
  * 如果服务器返回 NIL ，那么客户端获取锁失败，可以在稍后再重试。
  */
-
+@Slf4j
 public class RedisLock {
-    private static Logger logger = LoggerFactory.getLogger(RedisLock.class);
 
     private RedisTemplate redisTemplate;
 
@@ -263,7 +261,7 @@ public class RedisLock {
                     }
 
                     if (result == 0 && !StringUtils.isEmpty(lockKeyLog)) {
-                        logger.info("Redis分布式锁，解锁{}失败！解锁时间：{}", lockKeyLog, System.currentTimeMillis());
+                        log.info("Redis分布式锁，解锁{}失败！解锁时间：{}", lockKeyLog, System.currentTimeMillis());
                     }
 
                     locked = result == 0;
@@ -302,7 +300,7 @@ public class RedisLock {
                 }
 
                 if (!StringUtils.isEmpty(lockKeyLog) && !StringUtils.isEmpty(result)) {
-                    logger.info("获取锁{}的时间：{}", lockKeyLog, System.currentTimeMillis());
+                    log.info("获取锁{}的时间：{}", lockKeyLog, System.currentTimeMillis());
                 }
 
                 return result;
@@ -320,7 +318,7 @@ public class RedisLock {
         try {
             Thread.sleep(millis, random.nextInt(nanos));
         } catch (InterruptedException e) {
-            logger.info("获取分布式锁休眠被中断：", e);
+            log.info("获取分布式锁休眠被中断：", e);
         }
     }
 

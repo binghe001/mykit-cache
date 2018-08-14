@@ -1,14 +1,10 @@
 package io.mykit.cache.redis.spring.cache;
 
-import io.mykit.cache.redis.spring.constants.CacheConstants;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.StringUtils;
 import redis.clients.util.Hashing;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 
@@ -54,36 +50,6 @@ public class CacheKeyGenerator implements KeyGenerator {
         String finalKey = key.toString();
         long cacheKeyHash = Hashing.MURMUR_HASH.hash(finalKey);
         log.debug("using cache key={} hashCode={}", finalKey, cacheKeyHash);
-        return finalKey;
-    }
-
-    /**
-     * 获取方法上的注解
-     * @param method 方法句柄
-     * @return 方法上的注解value属性，如果存在#, 则对value进行分割，获取分割的数组的第一个元素，如果不存在#则直接获取整个value属性
-     */
-    private String getCacheKey(Method method){
-        String key = "";
-        Cacheable annotation = method.getAnnotation(Cacheable.class);
-        if(annotation != null){
-            String[] values = annotation.value();
-            if(values != null && values.length > 0){
-                String value = "";
-                for(String v : values){
-                    if (!StringUtils.isEmpty(v)){
-                        value = v;
-                        break;
-                    }
-                }
-                if (!StringUtils.isEmpty(value)){
-                    if (value.contains(CacheConstants.SEPARATOR)){
-                        key = value.split(CacheConstants.SEPARATOR)[0];
-                    }else{
-                        key = value;
-                    }
-                }
-            }
-        }
-        return key;
+        return String.valueOf(cacheKeyHash);
     }
 }

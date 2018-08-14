@@ -4,8 +4,7 @@ import io.mykit.cache.redis.spring.cache.expression.CacheOperationExpressionEval
 import io.mykit.cache.redis.spring.constants.CacheConstants;
 import io.mykit.cache.redis.spring.utils.ReflectionUtils;
 import io.mykit.cache.redis.spring.utils.SpringContextUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
@@ -19,6 +18,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.MethodInvoker;
 import org.springframework.util.StringUtils;
+import redis.clients.util.Hashing;
 
 import java.lang.reflect.Method;
 import java.util.*;
@@ -33,8 +33,8 @@ import java.util.concurrent.TimeUnit;
  * @description 手动刷新缓存实现类
  */
 @Component
+@Slf4j
 public class CacheSupportImpl implements CacheSupport {
-    private static final Logger logger = LoggerFactory.getLogger(CacheSupportImpl.class);
 
     private final CacheOperationExpressionEvaluator evaluator = new CacheOperationExpressionEvaluator();
 
@@ -79,7 +79,7 @@ public class CacheSupportImpl implements CacheSupport {
         //RedisTemplate redisTemplate = RedisTemplateUtils.getRedisTemplate(redisConnectionFactory);
         //在redis拿到方法信息，然后刷新缓存
         String invocationCacheKey = getInvocationCacheKey(cacheKey);
-        logger.info("refreshCacheByKey==>>" + invocationCacheKey);
+        log.debug("refreshCacheByKey==>>" + invocationCacheKey);
         Object result = redisTemplate.opsForValue().get(invocationCacheKey);
 
         if (result != null && result instanceof CachedMethodInvocation) {
@@ -87,7 +87,7 @@ public class CacheSupportImpl implements CacheSupport {
             // 执行刷新方法
             refreshCache(invocation, cacheName);
         } else {
-            logger.error("刷新redis缓存，反序列化方法信息异常");
+            log.error("刷新redis缓存，反序列化方法信息异常");
         }
 
     }
@@ -167,9 +167,9 @@ public class CacheSupportImpl implements CacheSupport {
             // 刷新redis中缓存法信息key的有效时间
             redisTemplate.expire(getInvocationCacheKey(redisCache.getCacheKey(invocation.getKey())), expireTime, TimeUnit.SECONDS);
 
-            logger.info("缓存：{}-{}，重新加载数据", cacheName, invocation.getKey().toString().getBytes());
+            log.debug("缓存：{}-{}，重新加载数据", cacheName, invocation.getKey().toString().getBytes());
         } catch (Exception e) {
-            logger.info("刷新缓存失败：" + e.getMessage(), e);
+            log.info("刷新缓存失败：" + e.getMessage(), e);
         }
 
     }
@@ -182,7 +182,9 @@ public class CacheSupportImpl implements CacheSupport {
             args = invocation.getArguments().toArray();
         }
         // 通过先获取Spring的代理对象，在根据这个对象获取真实的实例对象
-        Object target = ReflectionUtils.getTarget(SpringContextUtils.getBean(Class.forName(invocation.getTargetBean())));
+        Class<?> clazz = Class.forName(invocation.getTargetBean());
+        log.debug("类加载的路径22222：" + clazz.getResource("/").getPath()+ ", hashcode:" + Hashing.MURMUR_HASH.hash(clazz.getResource("/").getPath()));
+        Object target = ReflectionUtils.getTarget(SpringContextUtils.getBean(clazz));
 
         final MethodInvoker invoker = new MethodInvoker();
         invoker.setTargetObject(target);
@@ -262,9 +264,6 @@ public class CacheSupportImpl implements CacheSupport {
 
     private String getInvocationCacheKey(String cacheKey) {
         return cacheKey + CacheConstants.INVOCATION_CACHE_KEY_SUFFIX;
-
-        //TODO 暂时解决刷新缓存时，获取缓存中的数据为空的问题
-        //return cacheKey;
     }
 
     /**
