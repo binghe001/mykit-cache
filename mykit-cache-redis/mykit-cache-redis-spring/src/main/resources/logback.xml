@@ -9,10 +9,9 @@
      <!-- ch.qos.logback.core.rolling.RollingFileAppender 文件日志输出 -->  
     <appender name="file"  
         class="ch.qos.logback.core.rolling.RollingFileAppender">  
-        <Encoding>UTF-8</Encoding>  
         <File>/home/mykit/logs/mykit-cache-redis-spring/mykit-cache-redis-spring.log</File>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">  
-            <FileNamePattern>/home/mykit/logs/mykit-cache-redis-spring/mykit-cache-redis-spring-%d{yyyy-MM-dd}.log</FileNamePattern>
+            <FileNamePattern>/home/mykit/logs/mykit-cache-redis-spring/mykit-cache-redis-spring-%d{yyyy-MM-dd}.%i.log</FileNamePattern>
             <MaxHistory>10</MaxHistory>  
             <TimeBasedFileNamingAndTriggeringPolicy  
                 class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">  
