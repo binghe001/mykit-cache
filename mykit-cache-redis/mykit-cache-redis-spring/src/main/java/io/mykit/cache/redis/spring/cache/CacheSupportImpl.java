@@ -32,8 +32,8 @@ import java.util.concurrent.TimeUnit;
  * @date 2018/8/3 09:39
  * @description 手动刷新缓存实现类
  */
-@Component
 @Slf4j
+@Component
 public class CacheSupportImpl implements CacheSupport {
 
     private final CacheOperationExpressionEvaluator evaluator = new CacheOperationExpressionEvaluator();
@@ -169,7 +169,7 @@ public class CacheSupportImpl implements CacheSupport {
 
             log.debug("缓存：{}-{}，重新加载数据", cacheName, invocation.getKey().toString().getBytes());
         } catch (Exception e) {
-            log.info("刷新缓存失败：" + e.getMessage(), e);
+            log.error("刷新缓存失败：" + e.getMessage(), e);
         }
 
     }
