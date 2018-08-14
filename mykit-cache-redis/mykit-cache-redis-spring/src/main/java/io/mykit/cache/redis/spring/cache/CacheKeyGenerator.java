@@ -49,7 +49,7 @@ public class CacheKeyGenerator implements KeyGenerator {
         }
         String finalKey = key.toString();
         long cacheKeyHash = Hashing.MURMUR_HASH.hash(finalKey);
-        log.debug("using cache key={} hashCode={}", finalKey, cacheKeyHash);
+        log.debug("using cache key={} ", cacheKeyHash);
         return String.valueOf(cacheKeyHash);
     }
 }

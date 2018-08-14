@@ -2,8 +2,8 @@ package io.mykit.cache.redis.spring.cache;
 
 import com.alibaba.fastjson.JSONObject;
 import io.mykit.cache.redis.spring.constants.CacheConstants;
+import io.mykit.cache.redis.spring.context.SpringContextWrapper;
 import io.mykit.cache.redis.spring.utils.ReflectionUtils;
-import io.mykit.cache.redis.spring.utils.SpringContextUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.core.RedisOperations;
@@ -29,13 +29,13 @@ public class CustomizedRedisCacheManager extends RedisCacheManager {
     private RedisCacheManager redisCacheManager = null;
 
     private CacheSupport getCacheSupport() {
-        return SpringContextUtils.getBean(CacheSupport.class);
+        return SpringContextWrapper.getBean(SpringContextWrapper.getContextKey(CacheSupport.class), CacheSupport.class);
     }
 
     // 0 - never expire
     private long defaultExpiration = 0;
 
-    private Map<String, CacheTime> cacheTimes = null;
+    private volatile Map<String, CacheTime> cacheTimes = null;
 
     public CustomizedRedisCacheManager(RedisOperations redisOperations) {
         super(redisOperations);
@@ -47,7 +47,7 @@ public class CustomizedRedisCacheManager extends RedisCacheManager {
 
     public RedisCacheManager getInstance() {
         if (redisCacheManager == null) {
-            redisCacheManager = SpringContextUtils.getBean(RedisCacheManager.class);
+            redisCacheManager = SpringContextWrapper.getBean(SpringContextWrapper.getContextKey(RedisCacheManager.class), RedisCacheManager.class);
         }
         return redisCacheManager;
     }
@@ -95,11 +95,9 @@ public class CustomizedRedisCacheManager extends RedisCacheManager {
         CacheSupport cacheSupport = this.getCacheSupport();
         String cacheKey = cacheSupport.getCacheKey(cacheName);
         Map<String, CacheTime> map = cacheSupport.getCacheTimes(cacheName);
-        if (cacheTimes != null){
-            cacheTimes.putAll(map);
-        }else{
-            setCacheTimes(map);
-        }
+        log.debug("getMissingCache方法调用cacheSupport.getCacheTimes()方法获取的结果Map为===>>>" + JSONObject.toJSONString(map));
+        //处理cacheTimes和Map
+        this.putMapToCacheTimes(map);
         // 有效时间，初始化获取默认的有效时间
         Long expirationSecondTime = getExpirationSecondTime(cacheKey);
         // 自动刷新时间，默认是0
@@ -116,11 +114,32 @@ public class CustomizedRedisCacheManager extends RedisCacheManager {
     }
 
     /**
+     * 将cacheTimes中不存在的Key，但是map中存在的Key的CacheTime对象加入到cacheTimes中
+     * @param map cacheSupport.getCacheTimes()方法获取到的map
+     */
+    private void putMapToCacheTimes(Map<String, CacheTime> map){
+        if (!CollectionUtils.isEmpty(map)){
+            if (cacheTimes != null){
+                //遍历map
+                for(Map.Entry<String, CacheTime> entry : map.entrySet()){
+                    //cacheTimes不存在map中的key
+                    if(!cacheTimes.containsKey(entry.getKey())){
+                        cacheTimes.put(entry.getKey(), entry.getValue());
+                    }
+                }
+            }else{
+                setCacheTimes(map);
+            }
+        }
+    }
+
+    /**
      * 根据缓存名称设置缓存的有效时间和刷新时间，单位秒
      *
      * @param cacheTimes 缓存的名称和时间集合
      */
     public void setCacheTimes(Map<String, CacheTime> cacheTimes) {
+        log.debug("setCacheTimes===>>>" + JSONObject.toJSONString(cacheTimes));
         this.cacheTimes = (cacheTimes != null ? new ConcurrentHashMap<String, CacheTime>(cacheTimes) : null);
     }
 
@@ -134,9 +153,8 @@ public class CustomizedRedisCacheManager extends RedisCacheManager {
         this.defaultExpiration = defaultExpireTime;
     }
 
-    @Deprecated
     @Override
     public void setExpires(Map<String, Long> expires) {
-
+        super.setExpires(expires);
     }
 }

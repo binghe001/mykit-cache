@@ -2,8 +2,8 @@ package io.mykit.cache.redis.spring.cache;
 
 import io.mykit.cache.redis.spring.cache.expression.CacheOperationExpressionEvaluator;
 import io.mykit.cache.redis.spring.constants.CacheConstants;
+import io.mykit.cache.redis.spring.context.SpringContextWrapper;
 import io.mykit.cache.redis.spring.utils.ReflectionUtils;
-import io.mykit.cache.redis.spring.utils.SpringContextUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.framework.AopProxyUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,7 +68,7 @@ public class CacheSupportImpl implements CacheSupport {
                 CustomizedRedisCache redisCache = ((CustomizedRedisCache) cache);
                 // 将方法信息放到redis缓存
                 //RedisTemplate redisTemplate = RedisTemplateUtils.getRedisTemplate(redisConnectionFactory);
-                String invocationCacheKey = getInvocationCacheKey(redisCache.getCacheKey(key));
+                String invocationCacheKey = CacheSupportUtils.getInvocationCacheKey(redisCache.getCacheKey(key));
                 redisTemplate.opsForValue().set(invocationCacheKey, invocation, redisCache.getExpirationSecondTime(), TimeUnit.SECONDS);
             }
         }
@@ -78,7 +78,7 @@ public class CacheSupportImpl implements CacheSupport {
     public void refreshCacheByKey(String cacheName, String cacheKey) {
         //RedisTemplate redisTemplate = RedisTemplateUtils.getRedisTemplate(redisConnectionFactory);
         //在redis拿到方法信息，然后刷新缓存
-        String invocationCacheKey = getInvocationCacheKey(cacheKey);
+        String invocationCacheKey = CacheSupportUtils.getInvocationCacheKey(cacheKey);
         log.debug("refreshCacheByKey==>>" + invocationCacheKey);
         Object result = redisTemplate.opsForValue().get(invocationCacheKey);
 
@@ -94,6 +94,7 @@ public class CacheSupportImpl implements CacheSupport {
 
     @Override
     public Map<String, CacheTime> getCacheTimes(String cacheName) {
+        log.debug("getCacheTimes获取到的cacheName参数===>>>" + cacheName);
         ConcurrentMap<String, CacheTime> map = new ConcurrentHashMap<>();
         //默认超时时间5分钟
         long expireTime = CacheConstants.DEFAULT_EXPIRATION_SECOND_TIME;
@@ -165,7 +166,7 @@ public class CacheSupportImpl implements CacheSupport {
             CustomizedRedisCache redisCache = (CustomizedRedisCache) cache;
             long expireTime = redisCache.getExpirationSecondTime();
             // 刷新redis中缓存法信息key的有效时间
-            redisTemplate.expire(getInvocationCacheKey(redisCache.getCacheKey(invocation.getKey())), expireTime, TimeUnit.SECONDS);
+            redisTemplate.expire(CacheSupportUtils.getInvocationCacheKey(redisCache.getCacheKey(invocation.getKey())), expireTime, TimeUnit.SECONDS);
 
             log.debug("缓存：{}-{}，重新加载数据", cacheName, invocation.getKey().toString().getBytes());
         } catch (Exception e) {
@@ -182,15 +183,23 @@ public class CacheSupportImpl implements CacheSupport {
             args = invocation.getArguments().toArray();
         }
         // 通过先获取Spring的代理对象，在根据这个对象获取真实的实例对象
-        Class<?> clazz = Class.forName(invocation.getTargetBean());
-        log.debug("类加载的路径22222：" + clazz.getResource("/").getPath()+ ", hashcode:" + Hashing.MURMUR_HASH.hash(clazz.getResource("/").getPath()));
-        Object target = ReflectionUtils.getTarget(SpringContextUtils.getBean(clazz));
+        //Class<?> clazz = Class.forName(invocation.getTargetBean());
+        Class<?> clazz = ReflectionUtils.getInterfaceClass(invocation.getTargetBean(), invocation.getTargetMethod(), invocation.getParameterTypes());
+        log.debug(CacheSupportImpl.class.getName() + "类加载的路径：" + clazz.getResource("/").getPath()+ ", hashcode:" + Hashing.MURMUR_HASH.hash(clazz.getResource("/").getPath()));
+        String contextKey = SpringContextWrapper.getContextKey(clazz);
+        log.debug("contextKey===>>> " + contextKey);
+        log.debug(CacheSupportImpl.class.getName() + " applicationContext===>>>" + SpringContextWrapper.getApplicationContext(contextKey));
+        Object bean = SpringContextWrapper.getBean(contextKey, clazz);
+        log.debug("clazz===>>>" + clazz.getName() + "bean===>>>" + bean);
+        Object target = ReflectionUtils.getTarget(bean);
 
         final MethodInvoker invoker = new MethodInvoker();
         invoker.setTargetObject(target);
         invoker.setArguments(args);
         invoker.setTargetMethod(invocation.getTargetMethod());
         invoker.prepare();
+
+        log.debug("调用实际方法从数据源获取数据....");
 
         return invoker.invoke();
     }
@@ -219,8 +228,7 @@ public class CacheSupportImpl implements CacheSupport {
             AnnotatedElementKey methodCacheKey = new AnnotatedElementKey(method, targetClass);
             return evaluator.key(key, methodCacheKey, evaluationContext);
         }
-        Object generate = this.keyGenerator.generate(target, method, args);
-        return generate;
+        return this.keyGenerator.generate(target, method, args);
     }
 
     /**
@@ -262,9 +270,6 @@ public class CacheSupportImpl implements CacheSupport {
         }
     }
 
-    private String getInvocationCacheKey(String cacheKey) {
-        return cacheKey + CacheConstants.INVOCATION_CACHE_KEY_SUFFIX;
-    }
 
     /**
      * 获取注解上的value属性值（cacheNames）

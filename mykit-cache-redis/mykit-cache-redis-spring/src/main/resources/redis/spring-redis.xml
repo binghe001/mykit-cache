@@ -120,6 +120,7 @@
         <constructor-arg index="0" ref="redisTemplate"/>
         <property name="defaultExpiration" value="${redis.cluster.redisDefaultExpiration}"/>
         <property name="usePrefix" value="${redis.cluster.usePrefix}"/>
+        <!--配置默认的缓存时间信息-->
         <property name="cacheTimes">
             <map>
                 <entry key="${redis.cluster.defaultExpirationKey}" value-ref="cacheTime"/>

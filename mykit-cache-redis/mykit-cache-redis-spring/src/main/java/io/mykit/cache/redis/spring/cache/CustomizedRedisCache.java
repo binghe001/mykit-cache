@@ -39,6 +39,7 @@ public class CustomizedRedisCache extends RedisCache {
      */
     private long expirationSecondTime;
 
+
     public CustomizedRedisCache(String name, byte[] prefix, RedisOperations<? extends Object, ? extends Object> redisOperations, long expiration, long preloadSecondTime, CacheSupport cacheSupport) {
         super(name, prefix, redisOperations, expiration);
         this.redisOperations = redisOperations;
@@ -59,7 +60,6 @@ public class CustomizedRedisCache extends RedisCache {
         this.preloadSecondTime = preloadSecondTime;
         this.prefix = prefix;
         this.cacheSupport = cacheSupport;
-
     }
 
     /**
@@ -74,11 +74,15 @@ public class CustomizedRedisCache extends RedisCache {
     public ValueWrapper get(final Object key) {
         RedisCacheKey cacheKey = getRedisCacheKey(key);
         String cacheKeyStr = getCacheKey(key);
-
+        //没有回调则进行回调方法
+//        if (!callExpires){
+//            this.callExpiresBack(cacheKeyStr);
+//        }
         // 调用重写后的get方法
         ValueWrapper valueWrapper = this.get(cacheKey);
 
         if (null != valueWrapper) {
+            log.debug("执行刷新缓存的方法...");
             // 刷新缓存数据
             refreshCache(key, cacheKeyStr);
         }
@@ -124,6 +128,7 @@ public class CustomizedRedisCache extends RedisCache {
      */
     private void refreshCache(Object key, final String cacheKeyStr) {
         Long ttl = this.redisOperations.getExpire(cacheKeyStr);
+        log.debug("未获取到分布式锁：cacheKeyStr===>>>" +cacheKeyStr + ", ttl===>>>" + ttl + ",preloadSecondTime===>>>" + CustomizedRedisCache.this.preloadSecondTime);
         if (null != ttl && ttl <= CustomizedRedisCache.this.preloadSecondTime) {
             // 尽量少的去开启线程，因为线程池是有限的
             ThreadTaskUtils.run(new Runnable() {
@@ -135,6 +140,7 @@ public class CustomizedRedisCache extends RedisCache {
                         if (redisLock.lock()) {
                             // 获取锁之后再判断一下过期时间，看是否需要加载数据
                             Long ttl = CustomizedRedisCache.this.redisOperations.getExpire(cacheKeyStr);
+                            log.debug("获取到分布式锁：cacheKeyStr===>>>" +cacheKeyStr + ", ttl===>>>" + ttl + ",preloadSecondTime===>>>" + CustomizedRedisCache.this.preloadSecondTime);
                             if (null != ttl && ttl <= CustomizedRedisCache.this.preloadSecondTime) {
                                 // 通过获取代理方法信息重新加载缓存数据
                                 CustomizedRedisCache.this.cacheSupport.refreshCacheByKey(CustomizedRedisCache.super.getName(), cacheKeyStr);

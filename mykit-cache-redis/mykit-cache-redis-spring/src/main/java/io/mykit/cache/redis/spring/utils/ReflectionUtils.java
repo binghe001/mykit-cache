@@ -7,6 +7,7 @@ import org.springframework.aop.support.AopUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.List;
 
 /**
  * @author liuyazhuang
@@ -16,6 +17,48 @@ import java.lang.reflect.Method;
  */
 @Slf4j
 public class ReflectionUtils {
+
+    /**
+     * 获取targetBean所在类，实现的包含targetMethod方法的接口类
+     * @param targetBean 类的全类名
+     * @param targetMethod 方法
+     * @return targetBean实现的包含targetMethod的接口，当前类无接口，则直接返回
+     */
+    public static Class<?> getInterfaceClass(String targetBean, String targetMethod, List<String> parameterTypes) throws Exception{
+        Class<?> clazz = Class.forName(targetBean);
+        Class<?>[] parametersType = getParameterTypes(parameterTypes);
+        Class<?>[] interfaces = clazz.getInterfaces();
+        //没有实现接口，直接返回
+        if(interfaces == null || interfaces.length == 0){
+            return clazz;
+        }
+        for(Class<?> c : interfaces){
+            Method method = c.getMethod(targetMethod, parametersType);
+            if (method != null){
+                clazz = c;
+                break;
+            }
+
+            method = c.getDeclaredMethod(targetMethod, parametersType);
+            if (method != null){
+                clazz = c;
+                break;
+            }
+        }
+
+        return clazz;
+    }
+
+    private static Class<?>[] getParameterTypes(List<String> parameterTypes) throws Exception{
+        if(parameterTypes == null || parameterTypes.size() == 0){
+            return new Class<?>[0];
+        }
+        Class<?>[] classes = new Class<?>[parameterTypes.size()];
+        for(int i = 0; i < parameterTypes.size(); i++){
+            classes[i] = Class.forName(parameterTypes.get(i));
+        }
+        return classes;
+    }
 
     /**
      * 循环向上转型, 获取对象的 DeclaredMethod
