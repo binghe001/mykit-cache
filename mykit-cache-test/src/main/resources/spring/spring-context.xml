@@ -16,7 +16,7 @@
 
 	<context:annotation-config />
 	<aop:aspectj-autoproxy/>
-	<context:component-scan base-package="io.mykit.cache.test.redis.spring"/>
+	<context:component-scan base-package="io.mykit.cache"/>
 	   <!-- 引入配置文件 -->
 	  <context:property-placeholder location="classpath*:properties/redis-default.properties, classpath*:properties/redis.properties" system-properties-mode="FALLBACK"/>
 	  <context:annotation-config />

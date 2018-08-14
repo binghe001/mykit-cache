@@ -8,4 +8,6 @@ package io.mykit.cache.test.redis.spring.service;
 public interface RedisService {
 	
 	String getRedidInfo(String key, String defaultValue);
+
+	void printInfo();
 }
