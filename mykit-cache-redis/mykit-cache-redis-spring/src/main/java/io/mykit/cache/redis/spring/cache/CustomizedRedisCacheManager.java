@@ -144,7 +144,7 @@ public class CustomizedRedisCacheManager extends RedisCacheManager {
     }
 
     /**
-     * 设置默认的过去时间， 单位：秒
+     * 设置默认的过期时间， 单位：秒
      * @param defaultExpireTime 默认过期时间
      */
     @Override
@@ -153,6 +153,10 @@ public class CustomizedRedisCacheManager extends RedisCacheManager {
         this.defaultExpiration = defaultExpireTime;
     }
 
+    /**
+     * 设置缓存的Key和对应的过期时间
+     * @param expires 缓存的key和对应的过期时间组成的Map
+     */
     @Override
     public void setExpires(Map<String, Long> expires) {
         super.setExpires(expires);
