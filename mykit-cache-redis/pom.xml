@@ -5,13 +5,13 @@
     <parent>
         <artifactId>mykit-cache</artifactId>
         <groupId>io.mykit.cache</groupId>
-        <version>1.0.0</version>
+        <version>1.0.0-RELEASE</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>mykit-cache-redis</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.0</version>
+    <version>1.0.0-RELEASE</version>
     <modules>
         <module>mykit-cache-redis-spring</module>
     </modules>

@@ -7,7 +7,7 @@
     <groupId>io.mykit.cache</groupId>
     <artifactId>mykit-cache</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.0</version>
+    <version>1.0.0-RELEASE</version>
     <modules>
         <module>mykit-cache-memcached</module>
         <module>mykit-cache-redis</module>
