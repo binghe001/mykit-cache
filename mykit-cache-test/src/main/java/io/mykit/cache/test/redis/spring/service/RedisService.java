@@ -9,5 +9,5 @@ public interface RedisService {
 	
 	String getRedidInfo(String key, String defaultValue);
 
-	void printInfo();
+	String getInfo(String info);
 }

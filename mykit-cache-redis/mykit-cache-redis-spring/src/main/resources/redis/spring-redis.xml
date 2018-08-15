@@ -79,7 +79,7 @@
     </bean>
 
     <!-- redis服务器中心 -->
-    <bean id="connectionFactory"  class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory" >
+    <bean id="jedisConnectionFactory"  class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory" >
         <constructor-arg name="clusterConfig" ref="redisClusterConfiguration"/>
         <constructor-arg name="poolConfig" ref="jedisPoolConfig"/>
         <property name="password" value="${redis.cluster.password}" />
@@ -87,7 +87,7 @@
     </bean >
 
     <bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate" >
-        <property name="connectionFactory" ref="connectionFactory" />
+        <property name="connectionFactory" ref="jedisConnectionFactory" />
         <!--如果不配置Serializer，那么存储的时候缺省使用String，如果用User类型存储，那么会提示错误User can't cast to String！！  -->
         <property name="keySerializer" >
             <bean class="io.mykit.cache.redis.spring.serializer.StringRedisSerializer" />

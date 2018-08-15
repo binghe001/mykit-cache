@@ -1,8 +1,6 @@
 package io.mykit.cache.test.redis.spring.utils;
 
 import io.mykit.cache.redis.spring.context.SpringContextWrapper;
-import io.mykit.cache.test.redis.spring.service.RedisService;
-import io.mykit.cache.test.redis.spring.service.impl.RedisServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
@@ -29,8 +27,6 @@ public class SpringContext implements ApplicationContextAware {
         log.debug(SpringContext.class.getName() + " 类加载的路径：" + this.getClass().getResource("/").getPath() + ", hashcode:" + Hashing.MURMUR_HASH.hash(this.getClass().getResource("/").getPath()));
         log.debug(SpringContext.class.getName() + " applicationContext===>>>" + applicationContext);
         SpringContextWrapper.setApplicationContext(SpringContextWrapper.getContextKey(this.getClass()), applicationContext);
-        RedisService redisService = SpringContextWrapper.getBean(SpringContextWrapper.getContextKey(this.getClass()), RedisService.class);
-        redisService.printInfo();
     }
 
     /**

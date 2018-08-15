@@ -6,7 +6,6 @@ import io.mykit.cache.redis.spring.context.SpringContextWrapper;
 import io.mykit.cache.redis.spring.utils.ReflectionUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.aop.framework.AopProxyUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.Cache;
 import org.springframework.cache.interceptor.KeyGenerator;
 import org.springframework.context.expression.AnnotatedElementKey;
@@ -20,6 +19,7 @@ import org.springframework.util.MethodInvoker;
 import org.springframework.util.StringUtils;
 import redis.clients.util.Hashing;
 
+import javax.annotation.Resource;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -38,16 +38,16 @@ public class CacheSupportImpl implements CacheSupport {
 
     private final CacheOperationExpressionEvaluator evaluator = new CacheOperationExpressionEvaluator();
 
-    @Autowired
+    @Resource
     private KeyGenerator keyGenerator;
 
-    @Autowired
+    @Resource
     private RedisCacheManager cacheManager;
 
-    @Autowired
+    @Resource
     private JedisConnectionFactory redisConnectionFactory;
 
-    @Autowired
+    @Resource
     private RedisTemplate redisTemplate;
 
 

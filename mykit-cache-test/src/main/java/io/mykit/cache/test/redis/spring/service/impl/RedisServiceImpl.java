@@ -19,8 +19,10 @@ public class RedisServiceImpl implements RedisService {
 	}
 
 	@Override
-	public void printInfo() {
-		log.info("success");
+	@Cacheable(value={"test111#20#2"} /*key="#key" + ".#defaultValue",*/)
+	public String getInfo(String info){
+		log.debug("进入了方法....");
+		return "info===>>>" + info;
 	}
 
 }

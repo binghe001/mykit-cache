@@ -6,12 +6,12 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.aop.framework.AopProxyUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.BridgeMethodResolver;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ClassUtils;
 
+import javax.annotation.Resource;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Method;
@@ -27,7 +27,7 @@ import java.util.*;
 @Component
 public class CachingAnnotationsAspect {
 
-    @Autowired
+    @Resource
     private CacheSupport cacheSupport;
 
     private <T extends Annotation> List<T> getMethodAnnotations(AnnotatedElement ae, Class<T> annotationType) {

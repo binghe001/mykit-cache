@@ -33,6 +33,9 @@ public class RedisTest {
 			String result = redisService.getRedidInfo("redis_test", "default_value1");
 			logger.info(result);
 			Thread.sleep(1000);
+			logger.info("===============================================");
+			result = redisService.getInfo("Hello World");
+			logger.info(result);
 		}
 	}
 }
