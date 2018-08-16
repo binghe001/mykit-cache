@@ -85,4 +85,16 @@ public class RedisConfig {
      */
     @Value("${redis.cluster.maxWaitMillis}")
     private Integer maxWaitMillis;
+
+    /**
+     * testOnBorrow
+     */
+    @Value("redis.cluster.testOnBorrow")
+    private Boolean testOnBorrow;
+
+    /**
+     * testOnReturn
+     */
+    @Value("redis.cluster.testOnReturn")
+    private Boolean testOnReturn;
 }
