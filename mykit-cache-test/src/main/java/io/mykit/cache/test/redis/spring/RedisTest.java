@@ -1,5 +1,6 @@
 package io.mykit.cache.test.redis.spring;
 
+import io.mykit.cache.test.redis.spring.entity.Person;
 import io.mykit.cache.test.redis.spring.service.RedisService;
 import org.junit.Before;
 import org.junit.Test;
@@ -7,6 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 
 /**
@@ -36,6 +39,15 @@ public class RedisTest {
 			logger.info("===============================================");
 			result = redisService.getInfo("Hello World");
 			logger.info(result);
+		}
+	}
+	@Test
+	public void testPersons() throws Exception{
+		RedisService redisService = (RedisService) context.getBean("redisService");
+		while (true) {
+			List<Person> list = redisService.getPersons();
+			logger.info("获取到的列表长度：" + list.size());
+			Thread.sleep(1000);
 		}
 	}
 }

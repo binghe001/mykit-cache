@@ -93,16 +93,15 @@
             <bean class="io.mykit.cache.redis.spring.serializer.StringRedisSerializer" />
         </property>
         <property name="valueSerializer" >
-            <bean class="org.springframework.data.redis.serializer.JdkSerializationRedisSerializer" />
+            <bean class="io.mykit.cache.redis.spring.serializer.FastJsonRedisSerializer" />
         </property>
         <property name="hashKeySerializer">
             <bean class="io.mykit.cache.redis.spring.serializer.StringRedisSerializer"/>
         </property>
         <property name="hashValueSerializer">
-            <bean class="org.springframework.data.redis.serializer.JdkSerializationRedisSerializer"/>
+            <bean class="io.mykit.cache.redis.spring.serializer.FastJsonRedisSerializer"/>
         </property>
     </bean >
-
 
     <!--配置CacheTime类-->
     <bean id="cacheTime" class="io.mykit.cache.redis.spring.cache.CacheTime">

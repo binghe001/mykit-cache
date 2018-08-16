@@ -20,6 +20,10 @@ public class FastJsonRedisSerializer <T> implements RedisSerializer<T> {
 
     private Class<T> clazz;
 
+    public FastJsonRedisSerializer(){
+        super();
+    }
+
     public FastJsonRedisSerializer(Class<T> clazz) {
         super();
         this.clazz = clazz;
