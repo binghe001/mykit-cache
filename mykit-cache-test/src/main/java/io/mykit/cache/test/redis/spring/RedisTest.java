@@ -42,6 +42,16 @@ public class RedisTest {
 		}
 	}
 	@Test
+	public void testRedis1() throws Exception{
+		RedisService redisService = (RedisService) context.getBean("redisService");
+		String result = redisService.getRedidInfo("redis_test", "default_value1");
+		logger.info(result);
+		Thread.sleep(1000);
+		logger.info("===============================================");
+		result = redisService.getInfo("Hello World");
+		logger.info(result);
+	}
+	@Test
 	public void testPersons() throws Exception{
 		RedisService redisService = (RedisService) context.getBean("redisService");
 		while (true) {
