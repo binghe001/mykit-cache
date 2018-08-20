@@ -184,6 +184,7 @@ public class CacheSupportImpl implements CacheSupport {
         }
         // 通过先获取Spring的代理对象，在根据这个对象获取真实的实例对象
         //Class<?> clazz = Class.forName(invocation.getTargetBean());
+        //获取当前类的接口的Class对象
         Class<?> clazz = ReflectionUtils.getInterfaceClass(invocation.getTargetBean(), invocation.getTargetMethod(), invocation.getParameterTypes());
         log.debug(CacheSupportImpl.class.getName() + "类加载的路径：" + clazz.getResource("/").getPath()+ ", hashcode:" + Hashing.MURMUR_HASH.hash(clazz.getResource("/").getPath()));
         String contextKey = SpringContextWrapper.getContextKey(clazz);
@@ -191,8 +192,16 @@ public class CacheSupportImpl implements CacheSupport {
         log.debug(CacheSupportImpl.class.getName() + " applicationContext===>>>" + SpringContextWrapper.getApplicationContext(contextKey));
         Object bean = SpringContextWrapper.getBean(contextKey, clazz);
         log.debug("clazz===>>>" + clazz.getName() + "bean===>>>" + bean);
-        Object target = ReflectionUtils.getTarget(bean);
-
+        Object target = null;
+        log.debug("clazz.isInterface()===>>>" + clazz.isInterface());
+        //当前的clazz是一个接口，说明clazz不是代理对象，则直接将target设置为bean,
+        if (clazz.isInterface()){
+            log.debug("clazz是接口，执行 target = bean操作");
+            target = bean;
+        }else{
+            log.debug("clazz不是接口，执行 target = ReflectionUtils.getTarget(bean) 操作");
+            target = ReflectionUtils.getTarget(bean);
+        }
         final MethodInvoker invoker = new MethodInvoker();
         invoker.setTargetObject(target);
         invoker.setArguments(args);
