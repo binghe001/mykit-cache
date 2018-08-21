@@ -34,11 +34,6 @@
         <property name="numTestsPerEvictionRun" value="${redis.cluster.numTestsPerEvictionRun}" />
     </bean>
 
-    <!--配置文件加载-->
- <!--   <bean id="resourcePropertySource" class="org.springframework.core.io.support.ResourcePropertySource">
-        <constructor-arg name="name" value="redis.properties"/>
-        <constructor-arg name="resource" value="classpath:properties/redis.properties"/>
-    </bean>-->
 
     <!--redisCluster配置-->
     <bean id="redisClusterConfiguration" class="org.springframework.data.redis.connection.RedisClusterConfiguration">
