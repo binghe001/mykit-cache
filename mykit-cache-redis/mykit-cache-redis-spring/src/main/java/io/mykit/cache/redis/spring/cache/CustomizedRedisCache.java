@@ -74,18 +74,14 @@ public class CustomizedRedisCache extends RedisCache {
     public ValueWrapper get(final Object key) {
         RedisCacheKey cacheKey = getRedisCacheKey(key);
         String cacheKeyStr = getCacheKey(key);
-        //没有回调则进行回调方法
-//        if (!callExpires){
-//            this.callExpiresBack(cacheKeyStr);
-//        }
         // 调用重写后的get方法
         ValueWrapper valueWrapper = this.get(cacheKey);
+        if (valueWrapper == null)
+            return null;
 
-        if (null != valueWrapper) {
-            log.debug("执行刷新缓存的方法...");
-            // 刷新缓存数据
-            refreshCache(key, cacheKeyStr);
-        }
+        log.debug("执行刷新缓存的方法...");
+        // 刷新缓存数据
+        refreshCache(key, cacheKeyStr);
         return valueWrapper;
     }
 
