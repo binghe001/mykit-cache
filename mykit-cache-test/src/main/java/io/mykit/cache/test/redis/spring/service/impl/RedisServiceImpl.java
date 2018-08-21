@@ -16,14 +16,14 @@ import java.util.List;
 public class RedisServiceImpl implements RedisService {
 	//io.mykit.cache.test.redis.spring.service.impl.RedisServiceImpl.getRedidInfo:redis_test-default_value-
 	@Override
-	@Cacheable(value={"test111#15#2"} /*key="#key" + ".#defaultValue",*/)
+	@Cacheable(value={"test111#10#2"} /*key="#key" + ".#defaultValue",*/)
 	public String getRedidInfo(String key, String defaultValue) {
 		log.debug(RedisServiceImpl.class.getName() + "类加载的路径：" + this.getClass().getResource("/").getPath()+ ", hashcode:" + Hashing.MURMUR_HASH.hash(this.getClass().getResource("/").getPath()));
 		return LoadFile.getValue(key);
 	}
 
 	@Override
-	@Cacheable(value={"test111#20#2"} /*key="#key" + ".#defaultValue",*/)
+	@Cacheable(value={"test111#10#2"} /*key="#key" + ".#defaultValue",*/)
 	public String getInfo(String info){
 		log.debug("进入了方法....");
 		return "info===>>>" + info;

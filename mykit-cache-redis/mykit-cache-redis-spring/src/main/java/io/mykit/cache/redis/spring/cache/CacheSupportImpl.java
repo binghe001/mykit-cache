@@ -55,23 +55,28 @@ public class CacheSupportImpl implements CacheSupport {
     public void registerInvocation(Object targetBean, Method targetMethod, Class[] invocationParamTypes,
                                    Object[] invocationArgs, Set<String> annotatedCacheNames, String cacheKey) {
 
-        // 获取注解上真实的value值
-        Collection<? extends Cache> caches = getCache(annotatedCacheNames);
+       try{
+           // 获取注解上真实的value值
+           Collection<? extends Cache> caches = getCache(annotatedCacheNames);
 
-        // 获取key的SpEL值
-        Object key = generateKey(caches, cacheKey, targetMethod, invocationArgs, targetBean, CacheOperationExpressionEvaluator.NO_RESULT);
+           // 获取key的SpEL值
+           Object key = generateKey(caches, cacheKey, targetMethod, invocationArgs, targetBean, CacheOperationExpressionEvaluator.NO_RESULT);
 
-        // 新建一个代理对象（记录了缓存注解的方法类信息）
-        final CachedMethodInvocation invocation = new CachedMethodInvocation(key, targetBean, targetMethod, invocationParamTypes, invocationArgs);
-        for (Cache cache : caches) {
-            if (cache instanceof CustomizedRedisCache) {
-                CustomizedRedisCache redisCache = ((CustomizedRedisCache) cache);
-                // 将方法信息放到redis缓存
-                //RedisTemplate redisTemplate = RedisTemplateUtils.getRedisTemplate(redisConnectionFactory);
-                String invocationCacheKey = CacheSupportUtils.getInvocationCacheKey(redisCache.getCacheKey(key));
-                redisTemplate.opsForValue().set(invocationCacheKey, invocation, redisCache.getExpirationSecondTime(), TimeUnit.SECONDS);
-            }
-        }
+           // 新建一个代理对象（记录了缓存注解的方法类信息）
+           final CachedMethodInvocation invocation = new CachedMethodInvocation(key, targetBean, targetMethod, invocationParamTypes, invocationArgs);
+           for (Cache cache : caches) {
+               if (cache instanceof CustomizedRedisCache) {
+                   CustomizedRedisCache redisCache = ((CustomizedRedisCache) cache);
+                   // 将方法信息放到redis缓存
+                   //RedisTemplate redisTemplate = RedisTemplateUtils.getRedisTemplate(redisConnectionFactory);
+                   String invocationCacheKey = CacheSupportUtils.getInvocationCacheKey(redisCache.getCacheKey(key));
+                   redisTemplate.opsForValue().set(invocationCacheKey, invocation, redisCache.getExpirationSecondTime(), TimeUnit.SECONDS);
+               }
+           }
+       }catch (Exception e){
+           //捕获到异常，只打印日志，不进行处理
+           log.error("注册缓存方法信息抛出异常===>>>" + e.getMessage());
+       }
     }
 
     @Override

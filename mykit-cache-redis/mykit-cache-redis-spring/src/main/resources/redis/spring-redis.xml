@@ -112,7 +112,7 @@
     <!--配置的默认Key生成策略-->
     <bean id="cacheKeyGenerator" class="io.mykit.cache.redis.spring.cache.CacheKeyGenerator"/>
 
-    <bean id="cachingAnnotationsAspect" class="io.mykit.cache.redis.spring.cache.CachingAnnotationsAspect"/>
+    <bean id="cachingAnnotationsAspect" class="io.mykit.cache.redis.spring.aspect.CachingAnnotationsAspect"/>
 
     <!-- spring自己的缓存管理器，这里定义了缓存位置名称 ，即注解中的value -->
     <bean id="cacheManager" class="io.mykit.cache.redis.spring.cache.CustomizedRedisCacheManager">
