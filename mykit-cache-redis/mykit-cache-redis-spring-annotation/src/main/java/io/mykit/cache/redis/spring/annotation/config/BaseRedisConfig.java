@@ -59,6 +59,9 @@ public class BaseRedisConfig extends CachingConfigurerSupport {
     @Value("${redis.cluster.numTestsPerEvictionRun}")
     protected Integer numTestsPerEvictionRun;
 
+    @Value("${redis.cluster.password}")
+    protected String password;
+
     @Value("${redis.cluster.defaultExpirationKey}")
     protected String defaultExpirationKey;
 

@@ -9,15 +9,15 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>mykit-cache-test</artifactId>
+    <artifactId>mykit-cache-test-annotation</artifactId>
     <version>1.0.0-SNAPSHOT</version>
-
+    
     <dependencies>
         <dependency>
             <groupId>io.mykit.cache</groupId>
-            <artifactId>mykit-cache-redis-spring</artifactId>
+            <artifactId>mykit-cache-redis-spring-annotation</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
-
     </dependencies>
+
 </project>

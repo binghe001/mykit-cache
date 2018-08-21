@@ -1,4 +1,4 @@
-package io.mykit.cache.test.redis.spring;
+package io.mykit.cache.test.redis.spring.test.xml;
 
 import io.mykit.cache.test.redis.spring.entity.Person;
 import io.mykit.cache.test.redis.spring.service.RedisService;
