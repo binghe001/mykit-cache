@@ -44,4 +44,10 @@ mykit-cache-ehcache 下主要与 Spring 整合Ehcache操作相关的组件，支
 # 备注
 本项目还在开发中，目前未添加到Maven中央仓库，后续开发完成会添加到Maven中央仓库
 
+# 注意事项
+1、mykit-cache-redis-spring引用和mykit-cache-redis-spring-annotation引用时互斥的，即在一个工程中mykit-cache-redis-spring和mykit-cache-redis-spring-annotation只能同时引用一个；  
+2、mykit-cache-redis-spring和mykit-cache-redis-spring-annotation的功能是一样的，但是mykit-cache-redis-spring-annotation工程兼容Redis集群连不上的情况；  
+3、如果Redis集群连不上，则mykit-cache-redis-spring会抛出异常，退出执行；而mykit-cache-redis-spring-annotation则会打印相关的异常信息，直接继续执行原来的方法。
+
+
 
