@@ -21,5 +21,5 @@
 	  <context:property-placeholder location="classpath*:properties/redis-default.properties, classpath*:properties/redis.properties" system-properties-mode="FALLBACK"/>
 	  <context:annotation-config />
 	  <context:component-scan base-package="io.mykit.cache" />
- 	<import resource="classpath:redis/spring-redis.xml"/>
+ 	 <import resource="classpath:redis/spring-redis.xml"/>
 </beans>

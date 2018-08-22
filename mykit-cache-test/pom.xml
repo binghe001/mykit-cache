@@ -13,9 +13,10 @@
     <version>1.0.0-SNAPSHOT</version>
 
     <dependencies>
+
         <dependency>
             <groupId>io.mykit.cache</groupId>
-            <artifactId>mykit-cache-redis-spring</artifactId>
+            <artifactId>mykit-cache-redis-spring-xml</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
 

@@ -16,7 +16,7 @@ import org.springframework.context.annotation.PropertySource;
 @Configuration
 @EnableCaching
 @EnableAspectJAutoProxy(proxyTargetClass = true)
-@ComponentScan(value = {"io.mykit.cache.redis.spring.annotation", "io.mykit.cache.test.redis.spring"})
+@ComponentScan(value = {"io.mykit.cache"})
 @PropertySource(value = {"classpath:properties/redis-default.properties", "classpath:properties/redis.properties"})
 public class AnnotationConfig extends CacheRedisConfig {
 }

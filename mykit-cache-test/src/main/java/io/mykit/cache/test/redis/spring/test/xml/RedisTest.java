@@ -25,7 +25,7 @@ public class RedisTest {
 	private ClassPathXmlApplicationContext context;
 	@Before
 	public void init(){
-		context = new ClassPathXmlApplicationContext("spring/spring-context.xml");
+		context = new ClassPathXmlApplicationContext("classpath*:spring/spring-context.xml");
 		
 	}
 	

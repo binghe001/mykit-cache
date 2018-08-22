@@ -1,12 +1,12 @@
 package io.mykit.cache.redis.spring.annotation.config;
 
 import com.alibaba.fastjson.parser.ParserConfig;
-import io.mykit.cache.redis.spring.annotation.aspect.SpringCachingAnnotationsAspect;
-import io.mykit.cache.redis.spring.annotation.cache.CacheAnnotationKeyGenerator;
-import io.mykit.cache.redis.spring.annotation.cache.CacheAnnotationTime;
-import io.mykit.cache.redis.spring.annotation.cache.CustomizedAnnotationRedisCacheManager;
-import io.mykit.cache.redis.spring.annotation.serializer.FastJsonRedisAnnotationSerializer;
-import io.mykit.cache.redis.spring.annotation.serializer.StringRedisAnnotationSerializer;
+import io.mykit.cache.redis.spring.aspect.CachingAnnotationsAspect;
+import io.mykit.cache.redis.spring.cache.CacheKeyGenerator;
+import io.mykit.cache.redis.spring.cache.CacheTime;
+import io.mykit.cache.redis.spring.cache.CustomizedRedisCacheManager;
+import io.mykit.cache.redis.spring.serializer.FastJsonRedisSerializer;
+import io.mykit.cache.redis.spring.serializer.StringRedisSerializer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
@@ -39,7 +39,7 @@ public class CacheRedisConfig extends BaseRedisConfig{
      * @return JedisPoolConfig对象
      */
     @Bean
-    public JedisPoolConfig jedisAnnotationPoolConfig(){
+    public JedisPoolConfig jedisPoolConfig(){
         JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
         jedisPoolConfig.setMaxTotal(maxTotal);
         jedisPoolConfig.setMaxIdle(maxIdle);
@@ -60,7 +60,7 @@ public class CacheRedisConfig extends BaseRedisConfig{
      * @return RedisClusterConfiguration对象
      */
     @Bean
-    public RedisClusterConfiguration redisAnnotationClusterConfiguration(){
+    public RedisClusterConfiguration redisClusterConfiguration(){
         RedisClusterConfiguration redisClusterConfiguration = new RedisClusterConfiguration();
         redisClusterConfiguration.setMaxRedirects(3);
         redisClusterConfiguration.setClusterNodes(getRedisNodes());
@@ -72,8 +72,8 @@ public class CacheRedisConfig extends BaseRedisConfig{
      * @return 返回JedisConnectionFactory对象
      */
     @Bean
-    public JedisConnectionFactory jedisAnnotationConnectionFactory(){
-        JedisConnectionFactory jedisConnectionFactory = new JedisConnectionFactory(redisAnnotationClusterConfiguration(), jedisAnnotationPoolConfig());
+    public JedisConnectionFactory jedisConnectionFactory(){
+        JedisConnectionFactory jedisConnectionFactory = new JedisConnectionFactory(redisClusterConfiguration(), jedisPoolConfig());
         jedisConnectionFactory.setPassword(password);
         jedisConnectionFactory.setTimeout(timeout);
         return jedisConnectionFactory;
@@ -85,11 +85,11 @@ public class CacheRedisConfig extends BaseRedisConfig{
      * @return RedisTemplate对象
      */
     @Bean
-    public RedisTemplate<String, Object> redisAnnotationTemplate(){
+    public RedisTemplate<String, Object> redisTemplate(){
         RedisTemplate<String, Object> redisTemplate = new RedisTemplate<String, Object>();
-        redisTemplate.setConnectionFactory(jedisAnnotationConnectionFactory());
-        StringRedisAnnotationSerializer keySerializer = new StringRedisAnnotationSerializer();
-        FastJsonRedisAnnotationSerializer<Object> valueSerializer = new FastJsonRedisAnnotationSerializer<Object>();
+        redisTemplate.setConnectionFactory(jedisConnectionFactory());
+        StringRedisSerializer keySerializer = new StringRedisSerializer();
+        FastJsonRedisSerializer<Object> valueSerializer = new FastJsonRedisSerializer<Object>();
         ParserConfig.getGlobalInstance().setAutoTypeSupport(true);
         redisTemplate.setKeySerializer(keySerializer);
         redisTemplate.setValueSerializer(valueSerializer);
@@ -103,9 +103,9 @@ public class CacheRedisConfig extends BaseRedisConfig{
      * @return CacheAnnotationTime对象
      */
     @Bean
-    public CacheAnnotationTime cacheAnnotationTime(){
-        CacheAnnotationTime cacheAnnotationTime = new CacheAnnotationTime(expirationSecondTime, preloadSecondTime);
-        return cacheAnnotationTime;
+    public CacheTime cacheTime(){
+        CacheTime cacheTime = new CacheTime(expirationSecondTime, preloadSecondTime);
+        return cacheTime;
     }
 
     /**
@@ -113,9 +113,9 @@ public class CacheRedisConfig extends BaseRedisConfig{
      * @return CacheAnnotationKeyGenerator对象
      */
     @Bean
-    public CacheAnnotationKeyGenerator cacheAnnotationKeyGenerator(){
-        CacheAnnotationKeyGenerator cacheAnnotationKeyGenerator = new CacheAnnotationKeyGenerator();
-        return cacheAnnotationKeyGenerator;
+    public CacheKeyGenerator cacheKeyGenerator(){
+        CacheKeyGenerator cacheKeyGenerator = new CacheKeyGenerator();
+        return cacheKeyGenerator;
     }
 
     /**
@@ -123,9 +123,9 @@ public class CacheRedisConfig extends BaseRedisConfig{
      * @return SpringCachingAnnotationsAspect对象
      */
     @Bean
-    public SpringCachingAnnotationsAspect springCachingAnnotationsAspect(){
-        SpringCachingAnnotationsAspect springCachingAnnotationsAspect = new SpringCachingAnnotationsAspect();
-        return springCachingAnnotationsAspect;
+    public CachingAnnotationsAspect cachingAnnotationsAspect(){
+        CachingAnnotationsAspect cachingAnnotationsAspect = new CachingAnnotationsAspect();
+        return cachingAnnotationsAspect;
     }
 
 
@@ -134,12 +134,12 @@ public class CacheRedisConfig extends BaseRedisConfig{
      * @return CustomizedAnnotationRedisCacheManager对象
      */
     @Bean
-    public CustomizedAnnotationRedisCacheManager customizedAnnotationRedisCacheManager(){
-        CustomizedAnnotationRedisCacheManager customizedAnnotationRedisCacheManager = new CustomizedAnnotationRedisCacheManager(redisAnnotationTemplate());
+    public CustomizedRedisCacheManager customizedRedisCacheManager(){
+        CustomizedRedisCacheManager customizedAnnotationRedisCacheManager = new CustomizedRedisCacheManager(redisTemplate());
         customizedAnnotationRedisCacheManager.setDefaultExpiration(redisDefaultExpiration);
         customizedAnnotationRedisCacheManager.setUsePrefix(usePrefix);
-        Map<String, CacheAnnotationTime> map = new HashMap<String, CacheAnnotationTime>();
-        map.put(defaultExpirationKey, cacheAnnotationTime());
+        Map<String, CacheTime> map = new HashMap<String, CacheTime>();
+        map.put(defaultExpirationKey, cacheTime());
         customizedAnnotationRedisCacheManager.setCacheTimes(map);
         return customizedAnnotationRedisCacheManager;
     }
@@ -176,12 +176,12 @@ public class CacheRedisConfig extends BaseRedisConfig{
 
     @Override
     public CacheManager cacheManager() {
-        return customizedAnnotationRedisCacheManager();
+        return customizedRedisCacheManager();
     }
 
     @Override
     public KeyGenerator keyGenerator() {
-        return cacheAnnotationKeyGenerator();
+        return cacheKeyGenerator();
     }
 
     @Override
