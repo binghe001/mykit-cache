@@ -134,9 +134,13 @@ classpath*:properties/redis-default.properties, classpath*:properties/redis.prop
 1、无论需不需要兼容Redis集群宕机或其他原因无法连接Redis集群时的情况，都需要在自身项目的classpath目录下创建redis.properties文件，配置自身Redis集群节点的IP和端口，  
 目前，mykit-cache-redis-spring-annotation和mykit-cache-redis-spring-xml最多支持7台Redis集群，可根据自身实际情况扩展；  
 如果自身的Redis集群不足7台，可在redis.properties文件中配置重复的Redis集群节点的IP和端口；      
+  
 2、在自身项目的classpath目录下创建redis.properties文件,此文件名不是强制要求的，可使用其他的文件名代替，但是此文件名必须和spring配置文件中加载的redis配置文件名以及  
 以Java注解形式管理Spring容器的配置类中加载的redis配置文件名保持一致；  
-3、实例：  
+  
+3、自定义的Redis集群配置文件中的集群节点IP和端口的配置项名称必须和实例classpath:properties/redis.properties配置文件中的集群节点IP和端口的配置项名称相同；  
+  
+4、配置实例：  
 比如，在我自己项目中的classpath:properties下redis集群的配置文件为redis.properties，具体内容如下：  
 ```
 #redis cluster config
@@ -176,13 +180,88 @@ redis.cluster.node.seven.port=7006
 @PropertySource(value = {"classpath:properties/redis-default.properties", "classpath:properties/redis.properties"})
 ```
 
+5、具体使用  
+1) 在相关的查询方法上加上无key属性的@Cacheable注解：
+```
+@Cacheable(value={"test#10#2"})
+```
+没有配置@Cacheable的key属性，此时的@Cacheable的key属性值按照一定策略自定生成，即以当前类名(完整包名+类名)+方法名+方法类型列表+方法参数列表的HashCode为当前@Cacheable的key属性。  
+具体的key生成策略类为mykit-cache-redis-spring中的io.mykit.cache.redis.spring.cache.CacheKeyGenerator类；  
+
+2) 在相关的查询方法上加上有key属性的@Cacheable注解
+```
+@Cacheable(value={"test#10#2"} key="key" + ".#defaultValue")
+```
+配置了@Cacheable的key属性，此时@Cacheable的key属性值为key拼接参数defaultValue的值的结果的HashCode值。
+
+注意：  
+1、@Cacheable注解中没有key属性，框架会为@Cacheable生成Key属性，也就是说key属性不是必须的； 
+   
+2、@Cacheable注解没有配置key属性，则以当前类名(完整包名+类名)+方法名+方法类型列表+方法参数列表的HashCode为当前@Cacheable的key属性；  
+  
+3、@Cacheable注解配置了key属性，则以当前key的HashCode作为当前@Cacheable的key属性；  
+  
+4、@Cacheable的value属性中我们配置的值为 test#10#2，此时表示@Cacheable的缓存名称为test，其中10表示缓存有效时长(单位为秒)，2表示距离缓存失效的剩余时长(单位为秒)，  
+  
+即@Cacheable的value属性配置格式为：缓存名称#expireTime#reloadTime，框架规定必须以#作为分隔符  
+  
+expireTime：表示缓存的有效时长，单位秒；  
+reloadTime：表示距离缓存失效的剩余时长，单位秒；  
+expireTime 需要大于 reloadTime，否则无意义  
+  
+5、@Cacheable的value属性说明  
+  
+以缓存名称#expireTime#reloadTime格式配置@Cacheable的value属性后，框架会将查询结果放到缓存中，有效时长为expireTime秒，距离缓存失效的剩余时长为reloadTime秒； 
+   
+当在将数据存入缓存时，经过了0秒——(expireTime-reloadTime)秒时间范围时，再次调用方法，则直接从缓存中获取数据；  
+  
+当在将数据存入缓存时，经过了reloadTime秒——expireTime秒时间范围时，再次调用方法，框架会通过代理和反射的方式主动调用原方法从真正的数据源获取数据后刷新缓存； 
+  
+当在将数据存入缓存时，经过了超过expireTime秒的时间，则缓存失效，再次调用方法，则执行原方法查询数据，框架会自动将查询结果存入缓存； 
+  
+当框架通过代理和反射的方式主动调用原方法从真正的数据源获取数据后刷新缓存时，为防止请求的多个线程同时执行刷新缓存的操作，框架提供了分布式锁来保证只有一个线程执行刷新缓存操作； 
+  
+框架主动调用原方法从真正的数据源获取数据后刷新缓存的操作与用户的请求操作是异步的，不会影响用户请求的性能； 
+  
+框架主动调用原方法从真正的数据源获取数据后刷新缓存的操作对用户请求透明，即用户感知不到框架主动刷新缓存的操作； 
+  
+其他：  
+
+1)当 @Cacheable 的Value只配置了缓存名称，比如配置为@Cacheable(value="test")  
+此时的expireTime默认为redis配置文件的redis.cluster.expirationSecondTime属性值，单位为秒；reloadTime默认为redis配置文件的redis.cluster.preloadSecondTime属性值，单位为秒；
+
+属性值的加载顺序为：优先加载自定义的redis配置文件的redis.cluster.expirationSecondTime属性值和redis.cluster.preloadSecondTime属性值，如果自定义的redis配置文件无相关的属性值；  
+则从框架默认的redis配置文件redis-default.properties文件中加载；  
+  
+2)当 @Cacheable 的Value配置缓存名称和失效时长，比如配置为@Cacheable(value="test#10")  
+此时的reloadTime默认为redis配置文件的redis.cluster.preloadSecondTime属性值，单位为秒;  
+  
+属性值的加载顺序为：优先加载自定义的redis配置文件的redis.cluster.preloadSecondTime属性值，如果自定义的redis配置文件无相关的属性值；  
+则从框架默认的redis配置文件redis-default.properties文件中加载；  
+
+3) 当 @Cacheable 的Value配置缓存名称、失效时长和距离缓存失效的剩余时长，比如配置为：@Cacheable(value="test#10#2")    
+此时不会加载默认的expireTime和reloadTime，框架会直接使用@Cacheable注解中value属性配置的expireTime和reloadTime；
+  
+4) 无论@Cacheable的Value属性是否配置了缓存时长信息，则都不会出现只配置reloadTime，没有配置expireTime的情况，框架规定的value属性格式为：缓存名称#expireTime#reloadTime  
+即只会出现的格式为：  
+  
+缓存名称  
+缓存名称#expireTime  
+缓存名称#expireTime#reloadTime  
+  
+不会存在单独出现reloadTime的情况，会出现配置了缓存名称#expireTime，reloadTime使用配置文件默认的时长配置的情况；
+  
+  
 # 备注
 本项目还在开发中，目前未添加到Maven中央仓库，后续开发完成会添加到Maven中央仓库
 
 # 注意事项
 1、mykit-cache-redis-spring-xml引用和mykit-cache-redis-spring-annotation引用是互斥的，即在一个工程中mykit-cache-redis-spring-xml和mykit-cache-redis-spring-annotation只能同时引用一个；  
+  
 2、mykit-cache-redis-spring-xml和mykit-cache-redis-spring-annotation的功能是一样的，但是mykit-cache-redis-spring-annotation工程兼容Redis集群宕机或其他原因无法连接Redis集群时的情况；  
-3、如果Redis集群宕机或其他原因无法连接Redis集群时，则mykit-cache-redis-spring-xml会抛出异常，退出执行；而mykit-cache-redis-spring-annotation则会打印相关的异常信息，继续向下执行原来的方法。
+  
+3、如果Redis集群宕机或其他原因无法连接Redis集群时，则mykit-cache-redis-spring-xml会抛出异常，退出执行；而mykit-cache-redis-spring-annotation则会打印相关的异常信息，继续向下执行原来的方法。  
+  
 
 
 
