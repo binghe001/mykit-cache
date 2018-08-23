@@ -20,21 +20,37 @@ mykit-cache-memcached 下主要与 Spring 整合 Memcached 操作相关的组件
 mykit-cache架构下与Redis缓存相关的组件
 
 ### mykit-cache-redis-spring
-mykit-cache-redis 下主要与 Spring 整合 Redis操作相关的组件，支持通过注解设置缓存有效时间和主动刷新缓存，  
-主要提供Spring整合Redis的通用工具方法等，核心实现由此模块提供
+mykit-cache-redis 下主要与 Spring 整合 Redis操作相关的组件，支持通过注解设置缓存有效时间和主动刷新缓存
+
+### mykit-cache-redis-spring-core  
+mykit-cache-redis-spring 下主要提供Spring整合Redis的通用工具方法等，核心实现由此模块提供
 
 ### mykit-cache-redis-spring-annotation
-mykit-cache-redis 下主要与 Spring 整合 Redis操作相关的组件，支持通过注解设置缓存有效时间和主动刷新缓存，  
+mykit-cache-redis-spring 下主要与 Spring 整合 Redis操作相关的组件，支持通过注解设置缓存有效时间和主动刷新缓存，  
 主要以Java注解的形式实现Spring容器的管理操作，兼容Redis集群宕机或其他原因无法连接Redis集群时的情况，  
 如果Redis集群宕机或其他原因无法连接Redis集群时，打印相关的日志，并继续向下执行原有方法。
 
 ### mykit-cache-redis-spring-xml
-mykit-cache-redis 下主要与 Spring 整合 Redis操作相关的组件，支持通过注解设置缓存有效时间和主动刷新缓存，  
+mykit-cache-redis-spring 下主要与 Spring 整合 Redis操作相关的组件，支持通过注解设置缓存有效时间和主动刷新缓存，  
 主要以XML配置的形式实现Spring容器的管理操作，不兼容Redis集群宕机或其他原因无法连接Redis集群时的情况，  
 如果Redis集群宕机或其他原因无法连接Redis集群时，抛出异常，退出执行。
 
 ### mykit-cache-redis-spring-test
+mykit-cache-redis-spring 下测试Spring整合Redis的核心测试用例类，提供主要的测试封装；
 
+### mykit-cache-redis-spring-test-annotation
+mykit-cache-redis-spring 下测试以Java注解形式管理Spring容器的测试入口，  
+对mykit-cache-redis-spring-annotation提供单元测试用例，  
+测试入口为：io.mykit.cache.test.redis.spring.annotation.test.TestRedisConfig,  
+执行测试方法前需要先根据自身的Redis集群情况配置classpath:properties/redis.properties文件，    
+将redis.properties中的Redis集群的节点IP和端口修改为自身的Redis集群节点的IP和端口
+
+### mykit-cache-redis-spring-test-xml
+mykit-cache-redis-spring 下测试以XML配置形式管理Spring容器的测试入口，  
+mykit-cache-redis-spring-xml的测试模块，对mykit-cache-redis-spring-xml提供单元测试用例,  
+测试的入口为io.mykit.cache.test.redis.spring.test.xml.RedisTest,  
+执行测试方法前需要先根据自身的Redis集群情况配置classpath:properties/redis.properties文件，  
+将redis.properties中的Redis集群的节点IP和端口修改为自身的Redis集群节点的IP和端口
 
 ## mykit-cache-ehcache
 mykit-cache架构下与ehcache缓存相关的组件
@@ -42,17 +58,6 @@ mykit-cache架构下与ehcache缓存相关的组件
 ## mykit-cache-ehcache-spring
 mykit-cache-ehcache 下主要与 Spring 整合Ehcache操作相关的组件，支持通过注解设置缓存有效时间
 
-## mykit-cache-test
-mykit-cache-redis-spring-xml的测试模块，对mykit-cache-redis-spring-xml提供单元测试用例,  
-测试的入口为io.mykit.cache.test.redis.spring.test.xml.RedisTest,  
-执行测试方法前需要先根据自身的Redis集群情况配置classpath:properties/redis.properties文件，  
-将redis.properties中的Redis集群的节点IP和端口修改为自身的Redis集群节点的IP和端口
-
-## mykit-cache-test-annotation
-mykit-cache-redis-spring-annotation的测试模块，对mykit-cache-redis-spring-annotation提供单元测试用例，  
-测试入口为：io.mykit.cache.test.redis.spring.test.annotation.TestRedisConfig,  
-执行测试方法前需要先根据自身的Redis集群情况配置classpath:properties/redis.properties文件，    
-将redis.properties中的Redis集群的节点IP和端口修改为自身的Redis集群节点的IP和端口
 
 # 使用方法
 1、需要使用Spring+Redis集群配置缓存：  
@@ -66,30 +71,30 @@ mykit-cache-redis-spring-annotation的测试模块，对mykit-cache-redis-spring
         </dependency>
 
 此时，还需要根据具体情况在自身项目的合适模块中创建Redis的配置类，主要的功能为提供以Java注解的形式配置Spring和Redis集群整合的Spring容器管理，  
-示例程序为：mykit-cache-test-annotation测试模块中的io.mykit.cache.test.redis.spring.config.AnnotationConfig类。  
+示例程序为：mykit-cache-redis-spring-test-annotation测试模块中的io.mykit.cache.test.redis.spring.annotation.config.AnnotationConfig类。  
 ```
 package io.mykit.cache.test.redis.spring.annotation.config;
-
-import io.mykit.cache.redis.spring.annotation.config.CacheRedisConfig;
-import org.springframework.cache.annotation.EnableCaching;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.context.annotation.PropertySource;
-
-/**
- * @author liuyazhuang
- * @version 1.0.0
- * @date 2018/8/21 21:38
- * @description 提供以Java注解的形式配置Spring和Redis集群整合的Spring容器管理
- */
-@Configuration
-@EnableCaching
-@EnableAspectJAutoProxy(proxyTargetClass = true)
-@ComponentScan(value = {"io.mykit.cache"})
-@PropertySource(value = {"classpath:properties/redis-default.properties", "classpath:properties/redis.properties"})
-public class AnnotationConfig extends CacheRedisConfig {
-}
+ 
+ import io.mykit.cache.redis.spring.annotation.config.CacheRedisConfig;
+ import org.springframework.cache.annotation.EnableCaching;
+ import org.springframework.context.annotation.ComponentScan;
+ import org.springframework.context.annotation.Configuration;
+ import org.springframework.context.annotation.EnableAspectJAutoProxy;
+ import org.springframework.context.annotation.PropertySource;
+ 
+ /**
+  * @author liuyazhuang
+  * @version 1.0.0
+  * @date 2018/8/21 21:38
+  * @description 提供以Java注解的形式配置Spring和Redis集群整合的Spring容器管理
+  */
+ @Configuration
+ @EnableCaching
+ @EnableAspectJAutoProxy(proxyTargetClass = true)
+ @ComponentScan(value = {"io.mykit.cache"})
+ @PropertySource(value = {"classpath:properties/redis-default.properties", "classpath:properties/redis.properties"})
+ public class AnnotationConfig extends CacheRedisConfig {
+ }
 
 ```
 
@@ -103,7 +108,7 @@ public class AnnotationConfig extends CacheRedisConfig {
         </dependency>
 
 此时还需要根据具体情况在自身项目的spring配置文件中，进行相关的配置，主要的配置项有：开启Spring注解扫描及代理，扫描的基本类中加入io.mykit.cache包，并按照顺序加载  
-classpath*:properties/redis-default.properties, classpath*:properties/redis.properties文件，具体实例为：mykit-cache-test下的classpath:spring/spring-context.xml  
+classpath*:properties/redis-default.properties, classpath*:properties/redis.properties文件，具体实例为：mykit-cache-redis-spring-test-xml下的classpath:spring/spring-context.xml  
 配置文件：  
 ```
 <?xml version="1.0" encoding="UTF-8"?>
@@ -182,14 +187,17 @@ redis.cluster.node.seven.port=7006
 ```
 @PropertySource(value = {"classpath:properties/redis-default.properties", "classpath:properties/redis.properties"})
 ```
-
+也就是说：classpath:properties/redis-default.properties文件要写到自定义的配置文件的前面，框架会先加载classpath:properties/redis-default.properties，  
+然后加载自定义的配置文件，如果自定义的配置文件中存在与classpath:properties/redis-default.properties文件相同的属性配置，则框架会  
+用自定义的配置属性覆盖classpath:properties/redis-default.properties中相同的属性  
+  
 5、具体使用  
 1) 在相关的查询方法上加上无key属性的@Cacheable注解：
 ```
 @Cacheable(value={"test#10#2"})
 ```
 没有配置@Cacheable的key属性，此时的@Cacheable的key属性值按照一定策略自定生成，即以当前类名(完整包名+类名)+方法名+方法类型列表+方法参数列表的HashCode为当前@Cacheable的key属性。  
-具体的key生成策略类为mykit-cache-redis-spring中的io.mykit.cache.redis.spring.cache.CacheKeyGenerator类；  
+具体的key生成策略类为mykit-cache-redis-spring-core中的io.mykit.cache.redis.spring.cache.CacheKeyGenerator类；  
 
 2) 在相关的查询方法上加上有key属性的@Cacheable注解
 ```

@@ -1,4 +1,4 @@
-package io.mykit.cache.test.redis.spring.test.annotation;
+package io.mykit.cache.test.redis.spring.annotation.test;
 
 import io.mykit.cache.test.redis.spring.annotation.config.AnnotationConfig;
 import io.mykit.cache.test.redis.spring.entity.Person;
