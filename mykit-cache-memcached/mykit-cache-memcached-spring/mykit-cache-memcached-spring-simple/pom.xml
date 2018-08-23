@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>mykit-cache-memcached-spring</artifactId>
+        <groupId>io.mykit.cache</groupId>
+        <version>1.0.0-SNAPSHOT</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>mykit-cache-memcached-spring-simple</artifactId>
+    <packaging>pom</packaging>
+    <version>1.0.0-SNAPSHOT</version>
+    <modules>
+        <module>mykit-cache-memcached-spring-simple-xml</module>
+        <module>mykit-cache-memcached-spring-simple-core</module>
+        <module>mykit-cache-memcached-spring-simple-test</module>
+        <module>mykit-cache-memcached-spring-simple-test-xml</module>
+    </modules>
+
+
+</project>
