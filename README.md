@@ -60,8 +60,8 @@ mykit-cache-ehcache 下主要与 Spring 整合Ehcache操作相关的组件，支
 
 
 # 使用方法
-1、需要使用Spring+Redis集群配置缓存：  
-1) 需要兼容Redis集群宕机或其他原因无法连接Redis集群时的情况：  
+## 1、需要使用Spring+Redis集群配置缓存：  
+1)需要兼容Redis集群宕机或其他原因无法连接Redis集群时的情况：  
 在Maven的pom.xml中加入如下配置即可：  
 
         <dependency>
@@ -98,7 +98,7 @@ package io.mykit.cache.test.redis.spring.annotation.config;
 
 ```
 
-2) 不需要兼容Redis集群宕机或其他原因无法连接Redis集群时的情况：  
+2)不需要兼容Redis集群宕机或其他原因无法连接Redis集群时的情况：  
 在Maven的pom.xml中加入如下配置即可：  
 
         <dependency>
@@ -192,14 +192,14 @@ redis.cluster.node.seven.port=7006
 用自定义的配置属性覆盖classpath:properties/redis-default.properties中相同的属性  
   
 5、具体使用  
-1) 在相关的查询方法上加上无key属性的@Cacheable注解：
+1)在相关的查询方法上加上无key属性的@Cacheable注解：
 ```
 @Cacheable(value={"test#10#2"})
 ```
 没有配置@Cacheable的key属性，此时的@Cacheable的key属性值按照一定策略自定生成，即以当前类名(完整包名+类名)+方法名+方法类型列表+方法参数列表的HashCode为当前@Cacheable的key属性。  
 具体的key生成策略类为mykit-cache-redis-spring-core中的io.mykit.cache.redis.spring.cache.CacheKeyGenerator类；  
 
-2) 在相关的查询方法上加上有key属性的@Cacheable注解
+2)在相关的查询方法上加上有key属性的@Cacheable注解
 ```
 @Cacheable(value={"test#10#2"} key="key" + ".#defaultValue")
 ```
@@ -250,10 +250,10 @@ expireTime 需要大于 reloadTime，否则无意义
 属性值的加载顺序为：优先加载自定义的redis配置文件的redis.cluster.preloadSecondTime属性值，如果自定义的redis配置文件无相关的属性值；  
 则从框架默认的redis配置文件redis-default.properties文件中加载；  
 
-3) 当 @Cacheable 的Value配置缓存名称、失效时长和距离缓存失效的剩余时长，比如配置为：@Cacheable(value="test#10#2")    
+3)当 @Cacheable 的Value配置缓存名称、失效时长和距离缓存失效的剩余时长，比如配置为：@Cacheable(value="test#10#2")    
 此时不会加载默认的expireTime和reloadTime，框架会直接使用@Cacheable注解中value属性配置的expireTime和reloadTime；
   
-4) 无论@Cacheable的Value属性是否配置了缓存时长信息，则都不会出现只配置reloadTime，没有配置expireTime的情况，框架规定的value属性格式为：缓存名称#expireTime#reloadTime  
+4)无论@Cacheable的Value属性是否配置了缓存时长信息，则都不会出现只配置reloadTime，没有配置expireTime的情况，框架规定的value属性格式为：缓存名称#expireTime#reloadTime  
 即只会出现的格式为：  
   
 缓存名称  
