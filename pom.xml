@@ -12,8 +12,6 @@
         <module>mykit-cache-memcached</module>
         <module>mykit-cache-redis</module>
         <module>mykit-cache-ehcache</module>
-        <module>mykit-cache-test</module>
-        <module>mykit-cache-test-annotation</module>
     </modules>
 
     <properties>

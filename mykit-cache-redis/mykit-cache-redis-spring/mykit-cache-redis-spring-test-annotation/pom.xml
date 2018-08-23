@@ -3,27 +3,26 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>mykit-cache</artifactId>
+        <artifactId>mykit-cache-redis-spring</artifactId>
         <groupId>io.mykit.cache</groupId>
         <version>1.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>mykit-cache-redis</artifactId>
-    <packaging>pom</packaging>
+    <artifactId>mykit-cache-redis-spring-test-annotation</artifactId>
     <version>1.0.0-SNAPSHOT</version>
-    <modules>
-        <module>mykit-cache-redis-spring</module>
-    </modules>
 
     <dependencies>
-
         <dependency>
-            <groupId>redis.clients</groupId>
-            <artifactId>jedis</artifactId>
-            <version>2.9.0</version>
+            <groupId>io.mykit.cache</groupId>
+            <artifactId>mykit-cache-redis-spring-annotation</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
 
+        <dependency>
+            <groupId>io.mykit.cache</groupId>
+            <artifactId>mykit-cache-redis-spring-test</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
-
 </project>

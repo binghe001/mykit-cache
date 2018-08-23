@@ -33,6 +33,9 @@ mykit-cache-redis 下主要与 Spring 整合 Redis操作相关的组件，支持
 主要以XML配置的形式实现Spring容器的管理操作，不兼容Redis集群宕机或其他原因无法连接Redis集群时的情况，  
 如果Redis集群宕机或其他原因无法连接Redis集群时，抛出异常，退出执行。
 
+### mykit-cache-redis-spring-test
+
+
 ## mykit-cache-ehcache
 mykit-cache架构下与ehcache缓存相关的组件
 
