@@ -1,9 +1,8 @@
-package io.mykit.cache.test.memcached.annotation.test;
+package io.mykit.cache.test.redis.spring.annotation.test;
 
-import io.mykit.cache.test.memcached.annotation.config.AnnotationConfig;
+import io.mykit.cache.test.redis.spring.annotation.config.AnnotationConfig;
 import io.mykit.cache.test.redis.spring.entity.Person;
 import io.mykit.cache.test.redis.spring.service.RedisService;
-import io.mykit.cache.test.redis.spring.annotation.config.AnnotationConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Before;
 import org.junit.Test;

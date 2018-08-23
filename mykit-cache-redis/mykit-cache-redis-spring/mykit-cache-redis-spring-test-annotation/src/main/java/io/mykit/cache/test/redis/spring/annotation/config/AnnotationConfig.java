@@ -1,4 +1,4 @@
-package io.mykit.cache.test.memcached.annotation.config;
+package io.mykit.cache.test.redis.spring.annotation.config;
 
 import io.mykit.cache.redis.spring.annotation.config.CacheRedisConfig;
 import org.springframework.cache.annotation.EnableCaching;

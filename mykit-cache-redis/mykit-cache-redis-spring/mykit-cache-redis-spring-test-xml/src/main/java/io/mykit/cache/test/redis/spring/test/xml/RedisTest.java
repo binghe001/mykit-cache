@@ -1,7 +1,7 @@
-package io.mykit.cache.test.memcached.test.xml;
+package io.mykit.cache.test.redis.spring.test.xml;
 
-import io.mykit.cache.test.memcached.entity.Person;
-import io.mykit.cache.test.memcached.service.MemcachedService;
+import io.mykit.cache.test.redis.spring.entity.Person;
+import io.mykit.cache.test.redis.spring.service.RedisService;
 import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -31,7 +31,7 @@ public class RedisTest {
 	
 	@Test
 	public void testRedis() throws Exception{
-		MemcachedService redisService = (MemcachedService) context.getBean("redisService");
+		RedisService redisService = (RedisService) context.getBean("redisService");
 		while (true) {
 			String result = redisService.getRedidInfo("redis_test", "default_value1");
 			logger.info(result);
@@ -43,7 +43,7 @@ public class RedisTest {
 	}
 	@Test
 	public void testRedis1() throws Exception{
-		MemcachedService redisService = (MemcachedService) context.getBean("redisService");
+		RedisService redisService = (RedisService) context.getBean("redisService");
 		String result = redisService.getRedidInfo("redis_test", "default_value1");
 		logger.info(result);
 		Thread.sleep(1000);
@@ -53,7 +53,7 @@ public class RedisTest {
 	}
 	@Test
 	public void testPersons() throws Exception{
-		MemcachedService redisService = (MemcachedService) context.getBean("redisService");
+		RedisService redisService = (RedisService) context.getBean("redisService");
 		while (true) {
 			List<Person> list = redisService.getPersons();
 			logger.info("获取到的列表长度：" + list.size());
