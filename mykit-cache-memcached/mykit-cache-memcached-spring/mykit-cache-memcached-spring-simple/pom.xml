@@ -17,7 +17,6 @@
         <module>mykit-cache-memcached-spring-simple-core</module>
         <module>mykit-cache-memcached-spring-simple-test</module>
         <module>mykit-cache-memcached-spring-simple-test-xml</module>
-        <module>mykit-cache-memcached-spring-simple-annotation</module>
     </modules>
 
 
