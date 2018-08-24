@@ -16,6 +16,24 @@ mykit-cache架构下与Memcached缓存相关的组件
 ### mykit-cache-memcached-spring
 mykit-cache-memcached 下主要与 Spring 整合 Memcached 操作相关的组件，支持通过注解设置缓存有效时间
 
+### mykit-cache-memcached-spring-simple
+mykit-cache-memcached-spring下主要使用simple-spring-memcached内核实现注解缓存的组件，支持通过注解设置缓存有效时间
+
+### mykit-cache-memcached-spring-simple-core
+mykit-cache-memcached-spring-simple下的核心模块，提供核心配置项
+
+### mykit-cache-memcached-spring-simple-xml
+mykit-cache-memcached-spring-simple下以XML方式管理Spring容器的插件类，提供Spring容器管理Memcached的核心配置，  
+其他项目或工程只需引入此插件，同时在自身的Spring配置文件中加载此组件的Memcached的核心配置即可。
+
+### mykit-cache-memcached-spring-simple-test
+通用测试工程，主要测试mykit-cache-memcached-spring下主要以simple-spring-memcached为内核的缓存操作，此插件模块主要提供主要的测试用例封装类。
+
+### mykit-cache-memcached-spring-simple-test-xml
+mykit-cache-memcached-spring下测试simple-spring-memcached为内核的缓存操作的入口工程，  
+测试入口类为：io.mykit.cache.test.memcached.test.xml.MemcachedTest, 同时，需要将此工程  
+下的classpath:properties/memcached.properties文件中的simple.memcache.server属性配置为自身Memcached服务器的IP和端口。
+
 ## mykit-cache-redis
 mykit-cache架构下与Redis缓存相关的组件
 
@@ -260,19 +278,194 @@ expireTime 需要大于 reloadTime，否则无意义
 缓存名称#expireTime  
 缓存名称#expireTime#reloadTime  
   
-不会存在单独出现reloadTime的情况，会出现配置了缓存名称#expireTime，reloadTime使用配置文件默认的时长配置的情况；
+不会存在单独出现reloadTime的情况，会出现配置了缓存名称#expireTime，reloadTime使用配置文件默认的时长配置的情况；  
   
-  
-# 备注
-本项目还在开发中，目前未添加到Maven中央仓库，后续开发完成会添加到Maven中央仓库
-
 # 注意事项
 1、mykit-cache-redis-spring-xml引用和mykit-cache-redis-spring-annotation引用是互斥的，即在一个工程中mykit-cache-redis-spring-xml和mykit-cache-redis-spring-annotation只能同时引用一个；  
   
 2、mykit-cache-redis-spring-xml和mykit-cache-redis-spring-annotation的功能是一样的，但是mykit-cache-redis-spring-annotation工程兼容Redis集群宕机或其他原因无法连接Redis集群时的情况；  
   
 3、如果Redis集群宕机或其他原因无法连接Redis集群时，则mykit-cache-redis-spring-xml会抛出异常，退出执行；而mykit-cache-redis-spring-annotation则会打印相关的异常信息，继续向下执行原来的方法。  
+    
+## 2、需要使用Spring+Memcached集群配置缓存  
+1、需要在工程的pom.xml中引用  
+```
+<dependency>
+    <groupId>io.mykit.cache</groupId>
+    <artifactId>mykit-cache-memcached-spring-simple-xml</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+</dependency>
+```
+注意：框架的此模块不支持主动刷新缓存，底层核心使用的是simple-spring-memcached内核。  
   
+2、使用方法
+1)在自身项目的classpath:properties目录下新建Memcached的配置文件，比如：memcached.properties文件，配置连接Memcached的属性；  
+属性配置如下：
+```
+#simple memcached config
+simple.memcache.server=127.0.0.1:12000
+simple.memcache.consistenthashing=true
+simple.memcache.connectionpoolsize=1
+simple.memcache.optimizeget=false
+simple.memcache.optimizemergebuffer=false
+simple.memcache.mergefactor=50
+simple.memcache.usebinaryprotocol=true
+simple.memcache.connectiontimeout=3000
+simple.memcache.operationtimeout=2000
+simple.memcache.enableheartbeat=true
+simple.memcache.failureMode=false
+```  
 
+注意：自定义的memcached文件的属性，必须和memcached-default.properties默认配置的属性key相同，也就是和上述配置的key相同，但可以不用覆盖上述完整的配置，  
+可以只配置：
+```
+simple.memcache.server=192.168.209.121:12000
+```
+来覆盖simple.memcache.server属性
+      
+2)在自身项目的classpath目录下新建spring配置文件，比如：spring-context.xml，配置内容如下：
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:p="http://www.springframework.org/schema/p"
+	   xmlns:aop="http://www.springframework.org/schema/aop"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:cache="http://www.springframework.org/schema/cache"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+                        http://www.springframework.org/schema/context
+                        http://www.springframework.org/schema/context/spring-context-4.2.xsd
+                        http://www.springframework.org/schema/aop
+                        http://www.springframework.org/schema/aop/spring-aop-4.2.xsd
+                        http://www.springframework.org/schema/cache
+                        http://www.springframework.org/schema/cache/spring-cache-4.2.xsd">
 
+	<context:annotation-config />
+	<aop:aspectj-autoproxy/>
+	<context:component-scan base-package="io.mykit.cache"/>
+	   <!-- 引入配置文件 -->
+	  <context:property-placeholder location="classpath*:properties/memcached-default.properties, classpath*:properties/memcached.properties" system-properties-mode="FALLBACK"/>
+	  <context:annotation-config />
+	  <context:component-scan base-package="io.mykit.cache" />
+ 	 <import resource="classpath:memcached/memcached-simple.xml"/>
+</beans>
+```
+根据上述配置加载properties文件顺序，框架会用自定义的memcached.properties文件属性覆盖memcached-default.properties文件的属性。  
+如果memcached-default.properties文件中存在memcached.properties中不存在的属性，框架会用memcached-default.properties中默认的属性。  
+至此，就可以使用simple-spring-memcached提供的注解来配置使用缓存了。   
+   
+3、simple-spring-memcached介绍  
+3-1、基本介绍  
+simple-spring-memcached本质上是采用了AOP的方式来实现缓存的调用和管理，其核心组件声明了一些Advice，当遇到相应的切入点时，会执行这些Advice来对memcached加以管理。
+  
+切入点是通过标签的方式来进行声明的，在项目开发时，通常在DAO的方法上加以相应的标签描述，来表示组件对该方法的拦截  
+组件所提供的切入点主要包括以下几种：  
+ReadThroughSingleCache、ReadThroughMultiCache、ReadThroughAssignCache  
+  
+1)当遇到查询方法声明这些切入点时，组件首先会从缓存中读取数据，取到数据则跳过查询方法，直接返回。  
+取不到数据在执行查询方法，并将查询结果放入缓存，以便下一次获取。  
+InvalidateSingleCache、InvalidateMultiCache、InvalidateAssignCache  
+  
+2)当遇到删除方法声明这些切入点时，组件会删除缓存中的对应实体，以便下次从缓存中读取出的数据状态是最新的  
+UpdateSingleCache、UpdateMultiCache、UpdateAssignCache  
+  
+3-2、注解说明  
+各Annotation的详细说明  
+  
+ReadThroughSingleCache  
+作用：读取Cache中数据，如果不存在，则将读取的数据存入Cachekey生成规则：ParameterValueKeyProvider指定的参数，如果该参数对象中包含CacheKeyMethod注解的方法，则调用其方法，否则调用toString方法  
+```
+@ReadThroughSingleCache(namespace = "Alpha", expiration = 30)
+public String getDateString(@ParameterValueKeyProvider final String key) {
+   final Date now = new Date();
+   try {
+       Thread.sleep(1500);
+   } catch (InterruptedException ex) {
+   		
+   }
+   return now.toString() + ":" + now.getTime();
+}
+```
+InvalidateSingleCache  
+作用：失效Cache中的数据  
+key生成规则：  
+1)使用 ParameterValueKeyProvider注解时，与ReadThroughSingleCache一致  
+2)使用 ReturnValueKeyProvider 注解时，key为返回的对象的CacheKeyMethod或toString方法生成  
+```
+@InvalidateSingleCache(namespace = "Charlie")
+public void updateRandomString(@ParameterValueKeyProvider final Long key) {
+    // Nothing really to do here.
+}
+
+@InvalidateSingleCache(namespace = "Charlie")
+@ReturnValueKeyProvider
+public Long updateRandomStringAgain(final Long key) {
+    return key;
+}
+```
+UpdateSingleCache  
+作用：更新Cache中的数据  
+key生成规则：ParameterValueKeyProvider指定  
+1)ParameterDataUpdateContent：方法参数中的数据，作为更新缓存的数据  
+2)ReturnDataUpdateContent：方法调用后生成的数据，作为更新缓存的数据  
+注：上述两个注解，必须与Update*系列的注解一起使用  
+```
+@UpdateSingleCache(namespace = "Alpha", expiration = 30)
+public void overrideDateString(final int trash, @ParameterValueKeyProvider final String key,
+       @ParameterDataUpdateContent final String overrideData) {
+}
+
+@UpdateSingleCache(namespace = "Bravo", expiration = 300)
+@ReturnDataUpdateContent
+public String updateTimestampValue(@ParameterValueKeyProvider final Long key) {
+   try {
+       Thread.sleep(100);
+   } catch (InterruptedException ex) {
+   }
+   final Long now = new Date().getTime();
+   final String result = now.toString() + "-U-" + key.toString();
+   return result;
+}
+```
+ReadThroughAssignCache  
+作用：读取Cache中数据，如果不存在，则将读取的数据存入Cache  
+key生成规则： ReadThroughAssignCache 注解中的 assignedKey 字段指定  
+```
+@ReadThroughAssignCache(assignedKey = "SomePhatKey", namespace = "Echo", expiration = 3000)
+public List<String> getAssignStrings() {
+    try {
+        Thread.sleep(500);
+    } catch (InterruptedException ex) {
+    }
+    final List<String> results = new ArrayList<String>();
+    final long extra = System.currentTimeMillis() % 20;
+    final String base = System.currentTimeMillis() + "";
+    for (int ix = 0; ix < 20 + extra; ix++) {
+        results.add(ix + "-" + base);
+    }
+    return results;
+}
+```
+InvalidateAssignCache  
+作用：失效缓存中指定key的数据  
+key生成规则：assignedKey 字段指定  
+```
+@InvalidateAssignCache(assignedKey = "SomePhatKey", namespace = "Echo")
+public void invalidateAssignStrings() {
+	
+}
+```
+UpdateAssignCache  
+作用：更新指定缓存  
+key生成规则：assignedKey 字段指定  
+```
+@UpdateAssignCache(assignedKey = "SomePhatKey", namespace = "Echo", expiration = 3000)
+public void updateAssignStrings(int bubpkus, @ParameterDataUpdateContent final List<String> newData) {
+	
+}
+```
+
+# 备注
+本项目还在开发中，目前未添加到Maven中央仓库，后续开发完成会添加到Maven中央仓库
 
