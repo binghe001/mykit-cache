@@ -4,10 +4,10 @@ Adam Lu(刘亚壮)，高级软件架构师，Java编程专家，开源分布式�
 # 作者联系方式
 QQ：2711098650
 
-# 项目简述
+# 框架简述
 mykit架构中独立出来的mykit-cache组件，封装了mykit架构下对于缓存cache的各种操作，使用者只需要引入相关的Jar包，即可实现对缓存的轻松操作。
 
-# 项目结构描述
+# 框架结构描述
 封装了对于缓存的操作，支持Memcached、Redis、Ehcache等分布式缓存数据库，同时支持Spring的注解，通过Spring的注解可实现设置缓存的失效时间和主动刷新缓存
 
 ## mykit-cache-memcached
