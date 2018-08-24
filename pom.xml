@@ -12,6 +12,7 @@
         <module>mykit-cache-memcached</module>
         <module>mykit-cache-redis</module>
         <module>mykit-cache-ehcache</module>
+        <module>mykit-cache-doc</module>
     </modules>
 
     <properties>
