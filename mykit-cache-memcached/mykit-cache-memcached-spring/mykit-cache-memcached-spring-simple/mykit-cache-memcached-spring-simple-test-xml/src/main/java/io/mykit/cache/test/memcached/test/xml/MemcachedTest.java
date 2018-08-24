@@ -52,7 +52,7 @@ public class MemcachedTest {
     public void testPersons() throws Exception{
         MemcachedService redisService = (MemcachedService) context.getBean("redisService");
         while (true) {
-            List<Person> list = redisService.getPersons();
+            List<Person> list = redisService.getPersons("test");
             logger.info("获取到的列表长度：" + list.size());
             Thread.sleep(1000);
         }

@@ -29,7 +29,7 @@ public class MemcachedServiceImpl implements MemcachedService {
 
 	@Override
 	@ReadThroughSingleCache(namespace="intimeCache", expiration = 5)
-	public List<Person> getPersons(@ParameterValueKeyProvider String... params) {
+	public List<Person> getPersons(@ParameterValueKeyProvider String params) {
 		log.info("进入了获取用户列表的方法...");
 		List<Person> persons = new ArrayList<>();
 		persons.add(new Person("lyz1", 21));

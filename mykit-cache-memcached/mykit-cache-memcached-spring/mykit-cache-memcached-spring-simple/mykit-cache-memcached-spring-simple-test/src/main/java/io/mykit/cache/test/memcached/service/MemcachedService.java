@@ -16,5 +16,5 @@ public interface MemcachedService {
 
 	String getInfo(String info);
 
-	List<Person> getPersons(String... params);
+	List<Person> getPersons(String params);
 }
