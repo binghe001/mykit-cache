@@ -287,7 +287,108 @@ expireTime 需要大于 reloadTime，否则无意义
 2、mykit-cache-redis-spring-xml和mykit-cache-redis-spring-annotation的功能是一样的，但是mykit-cache-redis-spring-annotation工程兼容Redis集群宕机或其他原因无法连接Redis集群时的情况；  
   
 3、如果Redis集群宕机或其他原因无法连接Redis集群时，则mykit-cache-redis-spring-xml会抛出异常，退出执行；而mykit-cache-redis-spring-annotation则会打印相关的异常信息，继续向下执行原来的方法。  
+      
+4、如果你的项目中以XML配置的方式，配置了Spring容器和SpringMVC,而你想以兼容Redis集群宕机或其他原因连接不上Redis集群的方式配置缓存，可以经过如下配置：  
+1)在项目中添加如下配置类：  
+SpringContextConfig:配置Spring容器:  
+```
+package io.mykit.cache.redis.spring.utils.config;
+
+import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.context.annotation.ImportResource;
+import org.springframework.context.annotation.PropertySource;
+
+import io.mykit.cache.redis.spring.annotation.config.CacheRedisConfig;
+
+/**
+ * @ClassName SpringContextConfig
+ * @Description Spring Java配置
+ * @author liuyazhuang
+ * @date 2018年8月27日
+ */
+@Configuration
+@EnableCaching
+@EnableAspectJAutoProxy(proxyTargetClass = true)
+@ComponentScan(value = {"io.mykit.cache"})
+@PropertySource(value = {"classpath:properties/redis-default.properties", "classpath:properties/redis.properties"})
+@ImportResource("classpath:spring/applicationContext.xml")
+public class SpringContextConfig extends CacheRedisConfig{
+
+}
+```
+SpringMVCConfig:配置SpringMVC:
+```
+package io.mykit.cache.redis.spring.utils.config;
+
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ImportResource;
+
+/**
+ * @ClassName SpringMVCConfig
+ * @Description SpringMVC Java配置
+ * @author liuyazhuang
+ * @date 2018年8月27日
+ */
+@Configuration
+@ImportResource("classpath:spring/SpringMVC-servlet.xml")
+public class SpringMVCConfig {
+
+}
+```
+2)web项目的web.xml修改如下：  
+```
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+	version="3.0">
+	  <!-- 配置spring监听器 -->
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+	
+	<context-param>
+		<param-name>contextClass</param-name>
+		<param-value>
+			org.springframework.web.context.support.AnnotationConfigWebApplicationContext
+		</param-value>
+    </context-param>
     
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>io.mykit.cache.redis.spring.utils.config.SpringContextConfig</param-value>
+	</context-param>
+	<listener>
+		<listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>
+	</listener>
+	
+	<servlet>
+		<servlet-name>SpringMVC</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		
+		<init-param>
+			<param-name>contextClass</param-name>
+			<param-value>
+				org.springframework.web.context.support.AnnotationConfigWebApplicationContext
+			</param-value>
+		</init-param>
+		
+		<init-param>
+			<param-name>contextConfigLocation</param-name>
+			<param-value>io.mykit.cache.redis.spring.utils.config.SpringMVCConfig</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>SpringMVC</servlet-name>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+</web-app>
+```
+
 ## 2、需要使用Spring+Memcached集群配置缓存  
 1、需要在工程的pom.xml中引用  
 ```
@@ -728,6 +829,7 @@ public class SpringContext implements ApplicationContextAware {
 }
 
 ```
+
 
 # 备注
 本项目还在开发中，目前未添加到Maven中央仓库，后续开发完成会添加到Maven中央仓库
