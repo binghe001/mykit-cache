@@ -93,7 +93,7 @@ mykit-cache-ehcache 下主要与 Spring 整合Ehcache操作相关的组件，支
 ```
 2)在项目的resources目录下创建Redis的配置文件redis.properties文件  
 如果是Redis单机模式，则redis.properties文件的内容如下所示。
-```properties
+```
 redis.host=10.2.2.231
 redis.port=6379
 redis.max_idle=200
@@ -104,7 +104,7 @@ redis.test_on_borrow=true
 ```
 
 如果是Redis集群模式，则redis.properties文件的内容如下所示。
-```properties
+```
 
 #Redis集群模式
 redis.cluster.password=
@@ -154,7 +154,7 @@ redis.cluster.node.seven.port=7006
 
 3)在Java程序中使用Redis缓存  
 如果配置的是单机模式，则使用如下方式使用Redis缓存  
-```java
+```
 Jedis jedis = RedisBuilder.getInstance();
 jedis.set("name", "binghe");
 String value = jedis.get("name");
