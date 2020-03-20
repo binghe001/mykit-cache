@@ -1,5 +1,5 @@
 # 作者简介: 
-Adam Lu(刘亚壮)，高级软件架构师，Java编程专家，开源分布式消息引擎Mysum发起者、首席架构师及开发者，Android开源消息组件Android-MQ独立作者，国内知名开源分布式数据库中间件Mycat核心架构师、开发者，精通Java, C, C++, Python, Hadoop大数据生态体系，熟悉MySQL、Redis内核，Android底层架构。多年来致力于分布式系统架构、微服务、分布式数据库、大数据技术的研究，曾主导过众多分布式系统、微服务及大数据项目的架构设计、研发和实施落地。在高并发、高可用、高可扩展性、高可维护性和大数据等领域拥有丰富的经验。对Hadoop、Spark、Storm等大数据框架源码进行过深度分析并具有丰富的实战经验。
+冰河，高级软件架构师，Java编程专家，大数据架构师与编程专家，信息安全高级工程师，Mykit系列开源框架创始人、核心架构师和开发者，Android开源消息组件Android-MQ独立作者，精通Java, Python, Hadoop大数据生态体系，熟悉JVM、MySQL、Redis内核，Android底层架构。多年来致力于分布式系统架构、微服务、分布式数据库、分布式事务与大数据技术的研究，曾主导过众多分布式系统、微服务及大数据项目的架构设计、研发和实施落地。在高并发、高可用、高可扩展性、高可维护性和大数据等领域拥有丰富的架构经验。对Hadoop、Spark、Storm、Flink等大数据框架源码，以及Mycat、sharding-jdbc、Dubbo、MyBatis、Spring、SpringMVC、Tomcat、Zookeeper、Druid、Canal等框架和中间件源码进行过深度分析并具有丰富的实战经验。公众号【冰河技术】作者，《海量数据处理与大数据技术实战》、《MySQL开发、优化与运维实战》作者。
 
 # 作者联系方式
 QQ：2711098650
@@ -37,6 +37,9 @@ mykit-cache-memcached-spring下测试simple-spring-memcached为内核的缓存�
 
 ## mykit-cache-redis
 mykit-cache架构下与Redis缓存相关的组件
+
+### mykit-cache-redis-java
+mykit-cache-redis 下单独以Java方式使用Redis缓存的封装。
 
 ### mykit-cache-redis-spring
 mykit-cache-redis 下主要与 Spring 整合 Redis操作相关的组件，支持通过注解设置缓存有效时间和主动刷新缓存
@@ -79,7 +82,95 @@ mykit-cache-ehcache 下主要与 Spring 整合Ehcache操作相关的组件，支
 
 
 # 使用方法
-## 1、需要使用Spring+Redis集群配置缓存：  
+## 1、需要使用Java直接操作Redis:
+1)在Maven的pom.xml文件中加入如下配置：
+```xml
+<dependency>
+    <groupId>io.mykit.cache</groupId>
+    <artifactId>mykit-cache-redis-java</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+</dependency>
+```
+2)在项目的resources目录下创建Redis的配置文件redis.properties文件  
+如果是Redis单机模式，则redis.properties文件的内容如下所示。
+```
+redis.host=10.2.2.231
+redis.port=6379
+redis.max_idle=200
+redis.max_wait=10000
+redis.max_total=1024
+redis.timeout=3000
+redis.test_on_borrow=true
+```
+
+如果是Redis集群模式，则redis.properties文件的内容如下所示。
+```
+
+#Redis集群模式
+redis.cluster.password=
+redis.cluster.max.total=100
+redis.cluster.max.idle=20
+redis.cluster.min.idle=10
+redis.cluster.timeout=2000
+redis.cluster.maxAttempts=100
+redis.cluster.redisDefaultExpiration=3600
+redis.cluster.usePrefix=true
+redis.cluster.blockWhenExhausted=true
+redis.cluster.maxWaitMillis=3000
+redis.cluster.testOnBorrow=false
+redis.cluster.testOnReturn=false
+redis.cluster.testWhileIdle=true
+redis.cluster.minEvictableIdleTimeMillis=60000
+redis.cluster.timeBetweenEvictionRunsMillis=30000
+redis.cluster.numTestsPerEvictionRun=-1
+redis.cluster.defaultExpirationKey=defaultExpirationKey
+redis.cluster.expirationSecondTime=300
+redis.cluster.preloadSecondTime=280
+
+# virsual env
+redis.cluster.node.one=192.168.175.151
+redis.cluster.node.one.port=7001
+
+redis.cluster.node.two=192.168.175.151
+redis.cluster.node.two.port=7002
+
+redis.cluster.node.three=192.168.175.151
+redis.cluster.node.three.port=7003
+
+redis.cluster.node.four=192.168.175.151
+redis.cluster.node.four.port=7004
+
+redis.cluster.node.five=192.168.175.151
+redis.cluster.node.five.port=7005
+
+redis.cluster.node.six=192.168.175.151
+redis.cluster.node.six.port=7006
+
+redis.cluster.node.seven=192.168.175.151
+redis.cluster.node.seven.port=7006
+```
+### 注意：
+配置redis.properties文件时，可以修改Redis的IP和端口号，但是文件中的Key必须与上述示例给出的Key相同，否则Redis客户端无法连接到Redis服务器。
+
+3)在Java程序中使用Redis缓存  
+如果配置的是单机模式，则使用如下方式使用Redis缓存  
+```
+Jedis jedis = RedisBuilder.getInstance();
+jedis.set("name", "binghe");
+String value = jedis.get("name");
+System.out.println(value);
+```
+
+如果配置的是集群环境，则使用如下方式使用Redis缓存
+``` 
+JedisCluster jedisCluster = RedisClusterBuilder.getInstance();
+jedisCluster.set("name", "binghe");
+String value = jedisCluster.get("name");
+System.out.println(value);
+```
+
+
+## 2、需要使用Spring+Redis集群配置缓存：  
 1)需要兼容Redis集群宕机或其他原因无法连接Redis集群时的情况：  
 在Maven的pom.xml中加入如下配置即可：  
 
@@ -389,7 +480,7 @@ public class SpringMVCConfig {
 </web-app>
 ```
 
-## 2、需要使用Spring+Memcached集群配置缓存  
+## 3、需要使用Spring+Memcached集群配置缓存  
 1、需要在工程的pom.xml中引用  
 ```
 <dependency>
@@ -568,7 +659,7 @@ public void updateAssignStrings(int bubpkus, @ParameterDataUpdateContent final L
 }
 ```
 
-## 3、需要使用Spring + Ehcache集群配置缓存
+## 4、需要使用Spring + Ehcache集群配置缓存
   
 ## 框架此模块暂时不做实现，由于Spring与Ehcache的整合过于简单，可自行实现Spring与Ehcache的整合，这个不提供封装了。
 ## spring4配置基于注解的ehcache缓存
@@ -834,3 +925,9 @@ public class SpringContext implements ApplicationContextAware {
 # 备注
 本项目还在开发中，目前未添加到Maven中央仓库，后续开发完成会添加到Maven中央仓库
 
+# 扫一扫关注微信公众号
+
+**你在刷抖音，玩游戏的时候，别人都在这里学习，成长，提升，人与人最大的差距其实就是思维。你可能不信，优秀的人，总是在一起。** 
+  
+扫一扫关注冰河技术微信公众号  
+![微信公众号](https://github.com/sunshinelyz/binghe_resources/blob/master/images/subscribe/qrcode_for_gh_0d4482676600_344.jpg)  
