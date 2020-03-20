@@ -93,7 +93,7 @@ mykit-cache-ehcache 下主要与 Spring 整合Ehcache操作相关的组件，支
 ```
 2)在项目的resources目录下创建Redis的配置文件redis.properties文件  
 如果是Redis单机模式，则redis.properties文件的内容如下所示。
-```
+```properties
 redis.host=10.2.2.231
 redis.port=6379
 redis.max_idle=200
@@ -104,7 +104,7 @@ redis.test_on_borrow=true
 ```
 
 如果是Redis集群模式，则redis.properties文件的内容如下所示。
-```
+```properties
 
 #Redis集群模式
 redis.cluster.password=
@@ -154,7 +154,7 @@ redis.cluster.node.seven.port=7006
 
 3)在Java程序中使用Redis缓存  
 如果配置的是单机模式，则使用如下方式使用Redis缓存  
-```
+```java
 Jedis jedis = RedisBuilder.getInstance();
 jedis.set("name", "binghe");
 String value = jedis.get("name");
@@ -162,7 +162,7 @@ System.out.println(value);
 ```
 
 如果配置的是集群环境，则使用如下方式使用Redis缓存
-``` 
+``` java
 JedisCluster jedisCluster = RedisClusterBuilder.getInstance();
 jedisCluster.set("name", "binghe");
 String value = jedisCluster.get("name");
@@ -174,11 +174,13 @@ System.out.println(value);
 1)需要兼容Redis集群宕机或其他原因无法连接Redis集群时的情况：  
 在Maven的pom.xml中加入如下配置即可：  
 
-        <dependency>
-            <groupId>io.mykit.cache</groupId>
-            <artifactId>mykit-cache-redis-spring-annotation</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
-        </dependency>
+```xml
+ <dependency>
+    <groupId>io.mykit.cache</groupId>
+    <artifactId>mykit-cache-redis-spring-annotation</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+</dependency>
+```
 
 此时，还需要根据具体情况在自身项目的合适模块中创建Redis的配置类，主要的功能为提供以Java注解的形式配置Spring和Redis集群整合的Spring容器管理，  
 示例程序为：mykit-cache-redis-spring-test-annotation测试模块中的io.mykit.cache.test.redis.spring.annotation.config.AnnotationConfig类。  
