@@ -5,9 +5,8 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
- * @author liuyazhuang
+ * @author binghe
  * @version 1.0.0
- * @date 2018/8/3 09:59
  * @description 线程任务工具类
  */
 public class ThreadTaskUtils {

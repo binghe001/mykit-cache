@@ -7,9 +7,8 @@ import org.springframework.util.Assert;
 import java.nio.charset.Charset;
 
 /**
- * @author liuyazhuang
+ * @author binghe
  * @version 1.0.0
- * @date 2018/8/3 09:53
  * @description 必须重写序列化器，否则@Cacheable注解的key会报类型转换错误
  */
 

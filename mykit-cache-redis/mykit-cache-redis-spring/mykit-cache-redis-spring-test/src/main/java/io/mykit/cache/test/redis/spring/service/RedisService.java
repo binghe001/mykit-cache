@@ -6,7 +6,7 @@ import java.util.List;
 
 /**
  * 测试缓存
- * @author liuyazhuang
+ * @author binghe
  *
  */
 public interface RedisService {

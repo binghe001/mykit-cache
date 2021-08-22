@@ -11,9 +11,8 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import java.util.List;
 
 /**
- * @author liuyazhuang
+ * @author binghe
  * @version 1.0.0
- * @date 2018/8/21 18:24
  * @description 测试配置
  */
 @Slf4j

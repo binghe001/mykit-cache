@@ -8,9 +8,8 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.annotation.PropertySource;
 
 /**
- * @author liuyazhuang
+ * @author binghe
  * @version 1.0.0
- * @date 2018/8/21 21:38
  * @description 提供以Java注解的形式配置Spring和Redis集群整合的Spring容器管理
  */
 @Configuration

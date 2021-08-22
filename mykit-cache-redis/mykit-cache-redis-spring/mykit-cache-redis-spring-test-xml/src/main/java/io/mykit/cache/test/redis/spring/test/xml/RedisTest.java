@@ -14,7 +14,7 @@ import java.util.List;
 
 /**
  * 测试Redis缓存
- * @author liuyazhuang
+ * @author binghe
  *
  */
 @Component

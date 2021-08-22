@@ -27,9 +27,8 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
 /**
- * @author liuyazhuang
+ * @author binghe
  * @version 1.0.0
- * @date 2018/8/3 09:39
  * @description 手动刷新缓存实现类
  */
 @Slf4j

@@ -9,9 +9,8 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Method;
 
 /**
- * @author liuyazhuang
+ * @author binghe
  * @version 1.0.0
- * @date 2018/8/3 16:15
  * @description 自定义的默认Key生成策略
  */
 @Slf4j

@@ -3,9 +3,8 @@ package io.mykit.cache.redis.spring.cache;
 import io.mykit.cache.redis.spring.constants.CacheConstants;
 
 /**
- * @author liuyazhuang
+ * @author binghe
  * @version 1.0.0
- * @date 2018/8/14 11:48
  * @description 缓存的支持工具类
  */
 public class CacheSupportUtils {

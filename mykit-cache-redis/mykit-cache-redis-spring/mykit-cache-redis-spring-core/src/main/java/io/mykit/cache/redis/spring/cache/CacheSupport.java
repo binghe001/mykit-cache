@@ -5,9 +5,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * @author liuyazhuang
+ * @author  binghe
  * @version 1.0.0
- * @date 2018/8/3 09:33
  * @description 注册和刷新缓存接口
  */
 public interface CacheSupport {

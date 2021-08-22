@@ -1,5 +1,6 @@
 # 作者及联系方式
 作者：冰河  
+微信：sun_shine_lyz， hacker-binghe  
 QQ：2711098650  
 微信公众号： 冰河技术
 
@@ -194,9 +195,8 @@ package io.mykit.cache.test.redis.spring.annotation.config;
  import org.springframework.context.annotation.PropertySource;
  
  /**
-  * @author liuyazhuang
+  * @author binghe
   * @version 1.0.0
-  * @date 2018/8/21 21:38
   * @description 提供以Java注解的形式配置Spring和Redis集群整合的Spring容器管理
   */
  @Configuration
@@ -398,8 +398,7 @@ import io.mykit.cache.redis.spring.annotation.config.CacheRedisConfig;
 /**
  * @ClassName SpringContextConfig
  * @Description Spring Java配置
- * @author liuyazhuang
- * @date 2018年8月27日
+ * @author binghe
  */
 @Configuration
 @EnableCaching
@@ -421,8 +420,7 @@ import org.springframework.context.annotation.ImportResource;
 /**
  * @ClassName SpringMVCConfig
  * @Description SpringMVC Java配置
- * @author liuyazhuang
- * @date 2018年8月27日
+ * @author binghe
  */
 @Configuration
 @ImportResource("classpath:spring/SpringMVC-servlet.xml")
@@ -720,7 +718,7 @@ public void updateAssignStrings(int bubpkus, @ParameterDataUpdateContent final L
 @Cacheable 主要的参数
 	 
 
-value
+* value
 	
 
 缓存的名称，在 spring 配置文件中定义，必须指定至少一个
@@ -730,7 +728,7 @@ value
 @Cacheable(value=”mycache”) 或者 
 @Cacheable(value={”cache1”,”cache2”}
 
-key
+* key
 	
 
 缓存的 key，可以为空，如果指定要按照 SpEL 表达式编写，如果不指定，则缺省按照方法的所有参数进行组合
@@ -739,7 +737,7 @@ key
 例如：
 @Cacheable(value=”testcache”,key=”#userName”)
 
-condition
+* condition
 	
 
 缓存的条件，可以为空，使用 SpEL 编写，返回 true 或者 false，只有为 true 才进行缓存
@@ -760,7 +758,7 @@ public ResultInfo getActivityChartData(String urlID, Date startMonth,Date endMon
 @CachePut 主要的参数
 	 
 
-value
+* value
 	
 
 缓存的名称，在 spring 配置文件中定义，必须指定至少一个
@@ -770,7 +768,7 @@ value
 @Cacheable(value=”mycache”) 或者 
 @Cacheable(value={”cache1”,”cache2”}
 
-key
+* key
 	
 
 缓存的 key，可以为空，如果指定要按照 SpEL 表达式编写，如果不指定，则缺省按照方法的所有参数进行组合
@@ -779,7 +777,7 @@ key
 例如：
 @Cacheable(value=”testcache”,key=”#userName”)
 
-condition
+* condition
 	
 
 缓存的条件，可以为空，使用 SpEL 编写，返回 true 或者 false，只有为 true 才进行缓存
@@ -792,7 +790,7 @@ condition
 @CacheEvict 主要的参数
 	 
 
-value
+* value
 	
 
 缓存的名称，在 spring 配置文件中定义，必须指定至少一个
@@ -802,7 +800,7 @@ value
 @CachEvict(value=”mycache”) 或者 
 @CachEvict(value={”cache1”,”cache2”}
 
-key
+* key
 	
 
 缓存的 key，可以为空，如果指定要按照 SpEL 表达式编写，如果不指定，则缺省按照方法的所有参数进行组合
@@ -811,7 +809,7 @@ key
 例如：
 @CachEvict(value=”testcache”,key=”#userName”)
 
-condition
+* condition
 	
 
 缓存的条件，可以为空，使用 SpEL 编写，返回 true 或者 false，只有为 true 才清空缓存
@@ -821,7 +819,7 @@ condition
 @CachEvict(value=”testcache”,
 condition=”#userName.length()>2”)
 
-allEntries
+* allEntries
 	
 
 是否清空所有缓存内容，缺省为 false，如果指定为 true，则方法调用后将立即清空所有缓存
@@ -830,7 +828,7 @@ allEntries
 例如：
 @CachEvict(value=”testcache”,allEntries=true)
 
-beforeInvocation
+* beforeInvocation
 	
 
 是否在方法执行前就清空，缺省为 false，如果指定为 true，则在方法还没有执行的时候就清空缓存，缺省情况下，如果方法执行抛出异常，则不会清空缓存
@@ -842,7 +840,7 @@ beforeInvocation
 @CacheEvict用于删除缓存
 
 # 注意  
-无论使用哪种模块，需要在相关的项目中配置ApplicationContext到SpringContextWrapper中。  
+无论使用哪种模块，需要在相关的项目中配置ApplicationContext到SpringContextWrapper中。    
 示例代码如下：  
 ```
 package io.mykit.cache.test.redis.spring.utils;
@@ -855,9 +853,8 @@ import org.springframework.stereotype.Component;
 import redis.clients.util.Hashing;
 
 /**
- * @author liuyazhuang
+ * @author binghe
  * @version 1.0.0
- * @date 2018/8/3 09:57
  * @description 以静态变量保存Spring ApplicationContext, 可在任何代码任何地方任何时候中取出ApplicaitonContext.
  */
 @Slf4j
@@ -931,4 +928,4 @@ public class SpringContext implements ApplicationContextAware {
 **你在刷抖音，玩游戏的时候，别人都在这里学习，成长，提升，人与人最大的差距其实就是思维。你可能不信，优秀的人，总是在一起。** 
   
 扫一扫关注冰河技术微信公众号  
-![微信公众号](https://github.com/sunshinelyz/binghe_resources/blob/master/images/subscribe/qrcode_for_gh_0d4482676600_344.jpg)  
+![微信公众号](https://camo.githubusercontent.com/4023b21d99da736a7cc0fa538ec84307df86e6b03190906d745bb7fd3e9d2781/68747470733a2f2f696d672d626c6f672e6373646e696d672e636e2f32303230303930363031333731353838392e706e67)  

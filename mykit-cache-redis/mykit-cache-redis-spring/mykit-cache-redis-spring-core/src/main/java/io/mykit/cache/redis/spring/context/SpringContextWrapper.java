@@ -7,9 +7,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
- * @author liuyazhuang
+ * @author binghe
  * @version 1.0.0
- * @date 2018/8/14 10:01
  * @description 封装SpringContext
  */
 public class SpringContextWrapper {

@@ -9,9 +9,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * @author liuyazhuang
+ * @author binghe
  * @version 1.0.0
- * @date 2018/8/28 10:29
  * @description 集群缓存配置
  */
 public class RedisClusterBuilder {

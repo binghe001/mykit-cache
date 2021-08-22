@@ -15,9 +15,8 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * @author liuyazhuang
+ * @author binghe
  * @version 1.0.0
- * @date 2018/8/3 09:46
  * @description
  * 自定义的redis缓存管理器
  * 支持方法上配置过期时间

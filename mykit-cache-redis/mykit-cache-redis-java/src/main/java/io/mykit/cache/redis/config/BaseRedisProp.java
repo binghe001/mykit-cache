@@ -1,8 +1,7 @@
 package io.mykit.cache.redis.config;
 
 /**
- * @Author: liuyazhuang
- * @Date: 2018/7/18 15:23
+ * @Author: binghe
  * @Description: 基础的类，存放常量
  */
 
@@ -60,5 +59,20 @@ public class BaseRedisProp {
 
     public static final String CLUSTER_NODE_SEVEN = "redis.cluster.node.seven";
     public static final String CLUSTER_NODE_SEVEN_PORT = "redis.cluster.node.seven.port";
+
+
+    /**
+     * Redisson集群前缀
+     */
+    public static final String REDIS_CLUSTER_REDISSON_PREFIX = "redis://";
+
+    /**
+     * 组合拼接Redisson集群的Url
+     * @param host 主机名或IP地址
+     * @param port 端口号
+     */
+    public static String getResissonClusterUrl(String host, Integer port) {
+        return REDIS_CLUSTER_REDISSON_PREFIX.concat(host).concat(":").concat(String.valueOf(port));
+    }
 
 }

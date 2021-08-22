@@ -7,8 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * @author liuyazhuang
- * @date 2018/8/3 09:23
+ * @author binghe
  * @description  标记了缓存注解的方法类信息，用于主动刷新缓存时调用原始方法加载数据
  * @version 1.0.0
  */

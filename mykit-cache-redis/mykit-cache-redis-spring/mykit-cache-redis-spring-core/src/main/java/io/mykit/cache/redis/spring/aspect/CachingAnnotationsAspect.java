@@ -19,9 +19,8 @@ import java.lang.reflect.Method;
 import java.util.*;
 
 /**
- * @author liuyazhuang
+ * @author binghe
  * @version 1.0.0
- * @date 2018/8/3 09:42
  * @description 缓存拦截，用于注册方法信息
  */
 @Aspect

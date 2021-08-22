@@ -17,9 +17,8 @@ import java.util.Random;
 import java.util.UUID;
 
 /**
- * @author liuyazhuang
+ * @author binghe
  * @version 1.0.0
- * @date 2018/8/3 09:51
  * @description Redis分布式锁
  * 使用 SET resource-name anystring NX EX max-lock-time 实现
  * <p>

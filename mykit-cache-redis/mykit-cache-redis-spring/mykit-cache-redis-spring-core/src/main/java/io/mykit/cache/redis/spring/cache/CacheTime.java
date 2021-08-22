@@ -1,9 +1,8 @@
 package io.mykit.cache.redis.spring.cache;
 
 /**
- * @author liuyazhuang
+ * @author binghe
  * @version 1.0.0
- * @date 2018/8/3 09:41
  * @description 缓存时间
  */
 

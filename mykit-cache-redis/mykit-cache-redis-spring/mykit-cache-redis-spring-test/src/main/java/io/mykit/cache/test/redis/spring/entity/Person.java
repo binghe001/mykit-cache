@@ -7,10 +7,9 @@ import lombok.NoArgsConstructor;
 import java.io.Serializable;
 
 /**
- * @author liuyazhuang
+ * @author binghe
  * @version 1.0.0
- * @date 2018/8/16 09:06
- * @description 测试试题
+ * @description 测试实体
  */
 @NoArgsConstructor
 @AllArgsConstructor

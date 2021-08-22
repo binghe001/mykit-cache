@@ -26,9 +26,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * @author liuyazhuang
+ * @author binghe
  * @version 1.0.0
- * @date 2018/8/21 19:06
  * @description Redis配置类
  */
 @Slf4j

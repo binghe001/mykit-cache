@@ -8,7 +8,7 @@ import java.util.Properties;
 
 /**
  * 加载文件
- * @author liuyazhuang
+ * @author binghe
  *
  */
 public class LoadFile {

@@ -5,8 +5,7 @@ import java.io.InputStream;
 import java.util.Properties;
 
 /**
- * @Author: liuyazhuang
- * @Date: 2018/7/18 15:14
+ * @Author: binghe
  * @Description: 加载指定的redis.properties
  */
 

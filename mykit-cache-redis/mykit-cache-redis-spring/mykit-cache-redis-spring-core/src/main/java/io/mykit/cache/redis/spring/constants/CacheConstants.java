@@ -1,9 +1,8 @@
 package io.mykit.cache.redis.spring.constants;
 
 /**
- * @author liuyazhuang
+ * @author binghe
  * @version 1.0.0
- * @date 2018/8/3 13:52
  * @description 缓存常量类
  */
 public class CacheConstants {
