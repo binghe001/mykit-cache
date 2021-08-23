@@ -9,6 +9,9 @@ mykit架构中独立出来的mykit-cache组件，封装了mykit架构下对于�
 
 # 框架结构描述
 封装了对于缓存的操作，支持Memcached、Redis、Ehcache等分布式缓存数据库，同时支持Spring的注解，通过Spring的注解可实现设置缓存的失效时间和主动刷新缓存
+  
+## 总体结构如下所示。
+![](https://img-blog.csdnimg.cn/34080010b10d41769d7b319f0202eb14.png)
 
 ## mykit-cache-memcached
 mykit-cache架构下与Memcached缓存相关的组件
@@ -81,7 +84,11 @@ mykit-cache架构下与ehcache缓存相关的组件
 mykit-cache-ehcache 下主要与 Spring 整合Ehcache操作相关的组件，支持通过注解设置缓存有效时间
 
 
-# 使用方法
+# 使用场景
+
+## 总体场景
+![](https://img-blog.csdnimg.cn/50b89d902f0243799e91f3b00a4e36c0.png)
+
 ## 1、需要使用Java直接操作Redis:
 1)在Maven的pom.xml文件中加入如下配置：
 ```xml
